@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecWagore", "SecWagore\SecWagore.csproj", "{07758DF3-7317-40CC-9054-878CE4020D0C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07758DF3-7317-40CC-9054-878CE4020D0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07758DF3-7317-40CC-9054-878CE4020D0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07758DF3-7317-40CC-9054-878CE4020D0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07758DF3-7317-40CC-9054-878CE4020D0C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B5376679-7A29-40DA-8D41-C3DD716ECC8C}
+	EndGlobalSection
+EndGlobal

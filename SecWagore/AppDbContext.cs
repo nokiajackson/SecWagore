@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 public class AppDbContext : DbContext
 {
@@ -17,4 +18,7 @@ public class AppDbContext : DbContext
             optionsBuilder.UseSqlServer(connectionString);
         }
     }
+
+    // 在這裡定義您的資料庫模型
+
 }

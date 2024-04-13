@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+var cnstr = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={builder.Environment.ContentRootPath}App_Data\¸ê®Æ®wÀÉ®×;Integrated Security=True;Trusted_Connection=True;";
+
 // Configuration
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("SecWagoreContext");

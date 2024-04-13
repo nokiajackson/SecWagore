@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace SecWagore
 {
@@ -18,8 +19,16 @@ namespace SecWagore
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-
+            //services.AddControllersWithViews();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.HttpOnly = true;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                    options.LoginPath = "/Account/login";
+                    options.LogoutPath = "/Account/logout";
+                    options.SlidingExpiration = true;
+                });
             // 導入 Entity Framework Core
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SecWagoreContext")));

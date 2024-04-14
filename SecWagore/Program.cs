@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var cnstr = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={builder.Environment.ContentRootPath}App_Data\資料庫檔案;Integrated Security=True;Trusted_Connection=True;";
+//var cnstr = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={builder.Environment.ContentRootPath}App_Data\資料庫檔案;Integrated Security=True;Trusted_Connection=True;";
 
 // Configuration
 var configuration = builder.Configuration;

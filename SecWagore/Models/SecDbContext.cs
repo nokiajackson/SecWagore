@@ -7,13 +7,16 @@ namespace SecWagore.Models
 {
     public partial class SecDbContext : DbContext
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public SecDbContext()
         {
         }
 
-        public SecDbContext(DbContextOptions<SecDbContext> options)
+        public SecDbContext(DbContextOptions<SecDbContext> options,
+            IHttpContextAccessor httpContextAccessor)
             : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public virtual DbSet<Account> Accounts { get; set; } = null!;

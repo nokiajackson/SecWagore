@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SecWagore.Models;
 
-public class AccountService
+public class AccountService : SecDbContext
 {
     private readonly SecDbContext _db;
 
@@ -13,10 +13,6 @@ public class AccountService
         _db = dbContext;
     }
 
-    public List<Account> GetAllAccounts()
-    {
-        return _db.Accounts.ToList();
-    }
     public bool ValidateCredentials(string username, string password)
     {
         // 使用 LINQ 查詢檢查帳戶是否存在並驗證密碼
@@ -31,6 +27,12 @@ public class AccountService
             }
         }
         return false; // 驗證失敗
+    }
+
+
+    public List<Account> GetAllAccounts()
+    {
+        return _db.Accounts.ToList();
     }
 
     public Account GetAccountById(int id)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SecWagore.Models;
 using System.Diagnostics;
 
@@ -11,6 +12,12 @@ namespace SecWagore.Controllers
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+        }
+
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            return View();
         }
 
         public IActionResult Index()
@@ -28,5 +35,6 @@ namespace SecWagore.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }

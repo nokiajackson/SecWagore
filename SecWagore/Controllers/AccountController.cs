@@ -60,4 +60,33 @@ public class AccountController : ControllerBase
         }
         return Ok(account);
     }
+
+    [HttpPost("login")]
+    public IActionResult Login(LoginModel model)
+    {
+        // 驗證用戶名和密碼
+        bool isValid = _accountService.ValidateCredentials(model.Username, model.Password);
+        if (isValid)
+        {
+            return Ok("Login successful.");
+        }
+        else
+        {
+            return Unauthorized("Invalid credentials.");
+        }
+    }
+
+    /// <summary>
+    /// 驗證圖
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult Captcha()
+    {
+        var code = CaptchaHelper.GetCode(6);
+        TempData["captcha"] = code;
+
+        var byteArray = CaptchaHelper.GetByteArray(code);
+        return File(byteArray, "image/jpeg");
+    }
 }

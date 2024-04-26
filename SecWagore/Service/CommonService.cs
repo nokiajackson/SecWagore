@@ -1,4 +1,6 @@
-﻿using SecWagore.Models;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using SecWagore.Models;
 
 namespace SecWagore.Service
 {
@@ -15,7 +17,7 @@ namespace SecWagore.Service
         /// <param name="dbModel"></param>
         /// <param name="configuration"></param>
         /// <param name="userManageService"></param>
-        public CommonService(GdbContext dbModel,
+        public CommonService(SecDbContext dbModel,
             IConfiguration configuration) : base(dbModel)
         {
         }

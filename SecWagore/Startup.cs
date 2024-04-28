@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using SecWagore.Models;
 
 namespace SecWagore
 {
@@ -32,6 +33,21 @@ namespace SecWagore
             // 導入 Entity Framework Core
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("SecWagoreContext")));
+
+            #region Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Version = "v1.0.0",
+                    Title = "My Web API",
+                    Description = "說明文檔",
+                    TermsOfService = "None",
+                    Contact = new Swashbuckle.AspNetCore.Swagger.Contact { 
+                        Name = "My.Web", Email = "My.Web@xxx.com", Url = "https://www.cnblogs.com/Zev_Fung/" }
+                });
+            });
+            #endregion
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -60,6 +76,13 @@ namespace SecWagore
                     pattern: "{controller=Home}/{action=Login}/{id?}"); // 將默認路由設置為登錄頁面
             });
 
+            #region Swagger
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Web API V1");
+            });
+            #endregion
         }
 
 

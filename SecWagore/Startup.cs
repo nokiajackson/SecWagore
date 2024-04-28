@@ -57,8 +57,9 @@ namespace SecWagore
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Account}/{action=Login}/{id?}"); // 將默認路由設置為登錄頁面
+                    pattern: "{controller=Home}/{action=Login}/{id?}"); // 將默認路由設置為登錄頁面
             });
+
         }
 
 

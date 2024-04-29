@@ -1,11 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SecWagore.Heplers;
 using SecWagore.Models;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Reflection;
 
-[Route("api/[controller]")]
+
+[Route("Api/[controller]")]
 [ApiController]
-public class AccountController : ControllerBase
+public class AccountController : Controller
 {
     private readonly AccountService _accountService;
+
 
     public AccountController(AccountService accountService)
     {
@@ -13,14 +18,16 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("create")]
-    public IActionResult CreateAccount(Account account)
+    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    public async Task<IActionResult> CreateAccount(Account account)
     {
         _accountService.AddAccount(account);
         return Ok("Account created successfully.");
     }
 
     [HttpPost("validate")]
-    public IActionResult ValidateCredentials(LoginModel model)
+    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    public async Task<IActionResult> ValidateCredentials(LoginModel model)
     {
         // 首先檢查圖片驗證碼是否正確
         if (!ValidateImageCaptcha(model.Captcha))
@@ -51,7 +58,8 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetAccountById(int id)
+    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    public async Task<IActionResult> GetAccountById(int id)
     {
         var account = _accountService.GetAccountById(id);
         if (account == null)
@@ -62,7 +70,9 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login(LoginModel model)
+    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    //[SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    public async Task<IActionResult> Login(LoginModel model)
     {
         // 驗證用戶名和密碼
         bool isValid = _accountService.ValidateCredentials(model.Username, model.Password);
@@ -75,18 +85,46 @@ public class AccountController : ControllerBase
             return Unauthorized("Invalid credentials.");
         }
     }
+    /// <summary>
+    /// 登出
+    /// </summary>
+    /// <returns></returns>
+    //[HttpGet, HttpPost]
+    //[SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    //public async Task<IActionResult> Logout()
+    //{
+    //    //await _accountService.SignOutAsync();
+    //    return RedirectToAction("Index", "Home");
+    //}
 
     /// <summary>
     /// 驗證圖
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public IActionResult Captcha()
+    [Route("Captcha")] // 如果您使用了自定義路由，請確保包括該路由
+    [SwaggerResponse(200, type: typeof(FileContentResult))]
+    public async Task<IActionResult> Captcha()
     {
         var code = CaptchaHelper.GetCode(6);
-        TempData["captcha"] = code;
+        TempData["captcha"] = code; // 將驗證碼存儲在 TempData 中
+
 
         var byteArray = CaptchaHelper.GetByteArray(code);
         return File(byteArray, "image/jpeg");
+    }
+
+    void WriteLog(string message)
+    {
+        var path = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+        if (!Directory.Exists(path + "\\Logs\\"))
+        {
+            Directory.CreateDirectory(path + "\\Logs\\");
+        }
+        var logFile = path + "\\Logs\\" + string.Format("Portal_{0:D3}{1:D2}{2:D2}.log", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+        using (StreamWriter sw = System.IO.File.AppendText(logFile))
+        {
+            sw.WriteLine(string.Format("{0:T}:{1} ", DateTime.Now, message));
+        }
     }
 }

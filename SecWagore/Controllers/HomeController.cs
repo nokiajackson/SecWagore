@@ -20,6 +20,7 @@ namespace SecWagore.Controllers
             return View();
         }
 
+
         public IActionResult Index()
         {
             return View();
@@ -35,6 +36,7 @@ namespace SecWagore.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
 
     }
 }

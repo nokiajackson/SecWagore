@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SecWagore.Models
 {
+    [Table("Account")]
     public partial class Account
     {
         /// <summary>
         /// ID
         /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         /// <summary>
         /// 關聯校區
@@ -16,10 +20,12 @@ namespace SecWagore.Models
         /// <summary>
         /// 帳號
         /// </summary>
+        [MaxLength(255)] 
         public string Username { get; set; } = null!;
         /// <summary>
         /// 密碼
         /// </summary>
+        [MaxLength(255)]
         public string Password { get; set; } = null!;
         /// <summary>
         /// 創建時間

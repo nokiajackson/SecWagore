@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SecWagore.Heplers;
 using SecWagore.Models;
+using SecWagore.Service;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Reflection;
 
@@ -10,40 +11,48 @@ using System.Reflection;
 public class AccountController : Controller
 {
     private readonly AccountService _accountService;
+    
 
 
     public AccountController(AccountService accountService)
     {
         _accountService = accountService;
+        
     }
 
-    [HttpPost("create")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public async Task<IActionResult> CreateAccount(Account account)
+    [HttpGet("Test")]
+    public IActionResult Test()
     {
-        _accountService.AddAccount(account);
-        return Ok("Account created successfully.");
+        return Ok("AAA");
+    }
+
+    [HttpPost("CreateUser")]
+    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    public Task<IActionResult> CreateUser(Account account)
+    {
+        _accountService.CreateUser(account);
+        return Task.FromResult<IActionResult>(Ok("Account created successfully."));
     }
 
     [HttpPost("validate")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public async Task<IActionResult> ValidateCredentials(LoginModel model)
+    public Task<IActionResult> ValidateCredentials(LoginModel model)
     {
         // 首先檢查圖片驗證碼是否正確
-        if (!ValidateImageCaptcha(model.Captcha))
-        {
-            return BadRequest("Invalid image captcha.");
-        }
+        //if (!ValidateImageCaptcha(model.Captcha))
+        //{
+        //    return Task.FromResult<IActionResult>(BadRequest("Invalid image captcha."));
+        //}
 
         // 驗證帳戶
         bool isValid = _accountService.ValidateCredentials(model.Username, model.Password);
         if (isValid)
         {
-            return Ok("Credentials validated successfully.");
+            return Task.FromResult<IActionResult>(Ok("Credentials validated successfully."));
         }
         else
         {
-            return Unauthorized("Invalid credentials.");
+            return Task.FromResult<IActionResult>(Unauthorized("Invalid credentials."));
         }
     }
 
@@ -57,32 +66,32 @@ public class AccountController : Controller
         return captcha == "correct_image_captcha";
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{userName}")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public async Task<IActionResult> GetAccountById(int id)
+    public Task<IActionResult> GetAccountById(string userName)
     {
-        var account = _accountService.GetAccountById(id);
+        var account = _accountService.GetAccountById(userName);
         if (account == null)
         {
-            return NotFound("Account not found.");
+            return Task.FromResult<IActionResult>(NotFound("Account not found."));
         }
-        return Ok(account);
+        return Task.FromResult<IActionResult>(Ok(account));
     }
 
     [HttpPost("login")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
     //[SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public async Task<IActionResult> Login(LoginModel model)
+    public Task<IActionResult> Login(LoginModel model)
     {
         // 驗證用戶名和密碼
         bool isValid = _accountService.ValidateCredentials(model.Username, model.Password);
         if (isValid)
         {
-            return Ok("Login successful.");
+            return Task.FromResult<IActionResult>(Ok("Login successful."));
         }
         else
         {
-            return Unauthorized("Invalid credentials.");
+            return Task.FromResult<IActionResult>(Unauthorized("Invalid credentials."));
         }
     }
     /// <summary>
@@ -104,7 +113,7 @@ public class AccountController : Controller
     [HttpGet]
     [Route("Captcha")] // 如果您使用了自定義路由，請確保包括該路由
     [SwaggerResponse(200, type: typeof(FileContentResult))]
-    public async Task<IActionResult> Captcha()
+    public IActionResult Captcha()
     {
         var code = CaptchaHelper.GetCode(6);
         TempData["captcha"] = code; // 將驗證碼存儲在 TempData 中

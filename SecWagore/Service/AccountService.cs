@@ -4,9 +4,9 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SecWagore.Models;
 
-public class AccountService : SecDbContext
+public partial class AccountService 
 {
-    private readonly SecDbContext _db;
+    SecDbContext _db;
 
     public AccountService(SecDbContext dbContext)
     {
@@ -35,12 +35,12 @@ public class AccountService : SecDbContext
         return _db.Accounts.ToList();
     }
 
-    public Account GetAccountById(int id)
+    public Account GetAccountById(string userName)
     {
-        return _db.Accounts.FirstOrDefault(account => account.Id == id);
+        return _db.Accounts.FirstOrDefault(account => account.Username == userName);
     }
 
-    public void AddAccount(Account account)
+    public void CreateUser(Account account)
     {
         _db.Accounts.Add(account);
         _db.SaveChanges();

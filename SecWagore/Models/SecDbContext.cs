@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace SecWagore.Models
@@ -8,15 +9,20 @@ namespace SecWagore.Models
     public partial class SecDbContext : DbContext
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
+
         public SecDbContext()
         {
         }
 
         public SecDbContext(DbContextOptions<SecDbContext> options,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
             : base(options)
         {
             _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
+
         }
 
         public virtual DbSet<Account> Accounts { get; set; } = null!;
@@ -27,8 +33,15 @@ namespace SecWagore.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                
                 optionsBuilder.UseSqlServer("server=192.168.0.8;database=SecDb;User ID=secadmin;Password=wagor,2024;trusted_connection=true;Integrated Security=False;");
+
+                // Get the connection string from appsettings.json
+                //string connectionString = _configuration.GetConnectionString("SecWagoreContext");
+
+                // Configure the DbContext to use the SQL Server provider with the connection string
+                //optionsBuilder.UseSqlServer(connectionString);
             }
         }
 

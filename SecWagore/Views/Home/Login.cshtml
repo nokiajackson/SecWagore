@@ -78,7 +78,7 @@
             integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
     <script>
         (function (undefined) {
-            
+           
         })();
 
         $(document).ready(function () {
@@ -88,11 +88,11 @@
                 rel: root,
                 full: location.origin + root
             };
-            refreshCaptcha(); 
+
+            //refreshCaptcha(); 
         });
 
         function refreshCaptcha() {
-            console.log(window.appRoot)
             $.get(`${window.appRoot.full}Api/Account/Captcha`)
                 .done(function (res) {
                     console.log('res', res)
@@ -114,23 +114,23 @@
             var username = $('#username').val();
             var password = $('#password').val();
             var captcha = $('#captcha').val();
-
+            var tt = JSON.stringify({
+                username: username,
+                password: password
+            });
             var errorMessage = $('#errorMessage');
             if (username === '' || password === '' || captcha === '') {
                 errorMessage.text('Please fill in all fields.');
                 errorMessage.show();
             } else {
                 errorMessage.hide();
+                
                 // 發送 AJAX POST 請求到後端驗證 API
                 $.ajax({
-                    url: '/Account/login',
+                    url: `${window.appRoot.full}Api/Account/login`,
                     method: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({
-                        username: username,
-                        password: password,
-                        captcha: captcha
-                    }),
+                    data: tt,
                     success: function (response) {
                         // 登錄成功，重新導向到首頁或其他頁面
                         window.location.href = '/home';
@@ -148,7 +148,7 @@
 <body>
     <div class="login-container">
         <h2>Login</h2>
-        <div id="loginForm">
+        <form id="loginForm">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
@@ -157,17 +157,17 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label for="captcha">Captcha</label>
                 <img id="captchaImage" src="/Account/Captcha" alt="Captcha Image" />
                 <button type="button" onclick="refreshCaptcha()">Refresh Captcha</button>
                 <input type="text" id="captcha" name="captcha" required>
-            </div>
+            </div> *@
             <div class="form-group">
                 <button type="submit">Login</button>
             </div>
             <div id="errorMessage" class="error-message" style="display: none;"></div>
-        </div>
+        </form>
     </div>
 
 </body>

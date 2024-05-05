@@ -18,15 +18,15 @@ public partial class AccountService : BaseService<Campus>
         _configuration = configuration;
     }
 
-    public bool ValidateCredentials(string username, string password)
+    public bool ValidateCredentials(LoginModelVM model)
     {
         // 使用 LINQ 查詢檢查帳戶是否存在並驗證密碼
-        var account = DbModel.Accounts.FirstOrDefault(a => a.Username == username);
+        var account = DbModel.Accounts.FirstOrDefault(a => a.Username == model.Username);
         if (account != null)
         {
             // 在這裡你可能會使用加密方式進行密碼比對
             // 這裡僅作為示例，使用明文比較
-            if (account.Password == password)
+            if (account.Password == model.Password)
             {
                 return true; // 驗證成功
             }

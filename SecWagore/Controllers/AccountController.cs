@@ -11,20 +11,31 @@ using System.Reflection;
 public class AccountController : Controller
 {
     private readonly AccountService _accountService;
-    
+    CampusService _campusService;
 
 
-    public AccountController(AccountService accountService)
+    public AccountController(
+        AccountService accountService,
+        CampusService campusService
+        )
     {
         _accountService = accountService;
-        
+        _campusService = campusService;
+
     }
 
-    [HttpGet("Test")]
-    public IActionResult Test()
+    /// <summary>
+    /// Get all campuses.
+    /// </summary>
+    /// <returns>A list of all campuses.</returns>
+    [HttpGet("GetAllCampuses")]
+    [ProducesResponseType(typeof(List<Campus>), 200)]
+    public IActionResult GetAllCampuses()
     {
-        return Ok("AAA");
+        var campuses = _campusService.GetAllCampus();
+        return Ok(campuses);
     }
+
 
     [HttpPost("CreateUser")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
@@ -34,27 +45,6 @@ public class AccountController : Controller
         return Task.FromResult<IActionResult>(Ok("Account created successfully."));
     }
 
-    [HttpPost("validate")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public Task<IActionResult> ValidateCredentials(LoginModel model)
-    {
-        // 首先檢查圖片驗證碼是否正確
-        //if (!ValidateImageCaptcha(model.Captcha))
-        //{
-        //    return Task.FromResult<IActionResult>(BadRequest("Invalid image captcha."));
-        //}
-
-        // 驗證帳戶
-        bool isValid = _accountService.ValidateCredentials(model.Username, model.Password);
-        if (isValid)
-        {
-            return Task.FromResult<IActionResult>(Ok("Credentials validated successfully."));
-        }
-        else
-        {
-            return Task.FromResult<IActionResult>(Unauthorized("Invalid credentials."));
-        }
-    }
 
     private bool ValidateImageCaptcha(string captcha)
     {
@@ -81,10 +71,10 @@ public class AccountController : Controller
     [HttpPost("login")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
     //[SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public Task<IActionResult> Login(LoginModel model)
+    public Task<IActionResult> Login(LoginModelVM model)
     {
         // 驗證用戶名和密碼
-        bool isValid = _accountService.ValidateCredentials(model.Username, model.Password);
+        bool isValid = _accountService.ValidateCredentials(model);
         if (isValid)
         {
             return Task.FromResult<IActionResult>(Ok("Login successful."));

@@ -82,7 +82,7 @@
         })();
 
         $(document).ready(function () {
-            'use strict';
+            //'use strict';
             var root = '@Url.Content("~/")';
             window.appRoot = {
                 rel: root,
@@ -90,8 +90,52 @@
             };
 
             //refreshCaptcha(); 
+            getCampus();
+
         });
 
+        $('loginForm').click(function () {
+            alert('123')
+
+            var username = $('#username').val();
+            var password = $('#password').val();
+            var campus = $('#campusDropdown').val();
+
+            var captcha = $('#captcha').val();
+
+            var tt = JSON.stringify({
+                username,
+                password,
+                campus
+            });
+            console.log(tt);
+
+            // var errorMessage = $('#errorMessage');
+            // if (username === '' || password === '' || captcha === '') {
+            //     errorMessage.text('Please fill in all fields.');
+            //     errorMessage.show();
+            // } else {
+            //     errorMessage.hide();
+
+            //     // 發送 AJAX POST 請求到後端驗證 API
+            //     $.ajax({
+            //         url: `${window.appRoot.full}Api/Account/login`,
+            //         method: 'POST',
+            //         contentType: 'application/json',
+            //         data: tt,
+            //         success: function (response) {
+            //             // 登錄成功，重新導向到首頁或其他頁面
+            //             window.location.href = '/home/EntryRecord';
+            //         },
+            //         error: function (xhr, textStatus, errorThrown) {
+            //             // 登錄失敗，顯示錯誤信息
+            //             errorMessage.text('Invalid credentials.');
+            //             errorMessage.show();
+            //         }
+            //     });
+            // }
+
+        });
         function refreshCaptcha() {
             $.get(`${window.appRoot.full}Api/Account/Captcha`)
                 .done(function (res) {
@@ -103,59 +147,32 @@
                     console.error('Error refreshing captcha:', error);
                 });
         }
-
-        $('#refreshButton').click(function () {
-            refreshCaptcha();
-        });
-
-        $('#loginForm').submit(function (event) {
-            event.preventDefault();
-
-            var username = $('#username').val();
-            var password = $('#password').val();
-            var captcha = $('#captcha').val();
-            var tt = JSON.stringify({
-                username: username,
-                password: password
-            });
-            var errorMessage = $('#errorMessage');
-            if (username === '' || password === '' || captcha === '') {
-                errorMessage.text('Please fill in all fields.');
-                errorMessage.show();
-            } else {
-                errorMessage.hide();
-                
-                // 發送 AJAX POST 請求到後端驗證 API
-                $.ajax({
-                    url: `${window.appRoot.full}Api/Account/login`,
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: tt,
-                    success: function (response) {
-                        // 登錄成功，重新導向到首頁或其他頁面
-                        window.location.href = '/home';
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        // 登錄失敗，顯示錯誤信息
-                        errorMessage.text('Invalid credentials.');
-                        errorMessage.show();
-                    }
+        function getCampus() {
+            $.get(`${window.appRoot.full}Api/Account/GetAllCampuses`, function (data) {
+                // 將返回的資料用於動態建立選項
+                data.forEach(function (campus) {
+                    $("#campusDropdown").append(`<option value="${campus.id}">${campus.campusName}</option>`);
                 });
-            }
-        });
+            });
+        }
+
     </script>
 </head>
 <body>
     <div class="login-container">
         <h2>Login</h2>
-        <form id="loginForm">
+        <div >
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" required>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" required>
+            </div>
+            <div class="form-group">
+                <label for="campusDropdown">Campus</label>
+                <select class="form-select" id="campusDropdown"></select>
             </div>
             @* <div class="form-group">
                 <label for="captcha">Captcha</label>
@@ -164,10 +181,10 @@
                 <input type="text" id="captcha" name="captcha" required>
             </div> *@
             <div class="form-group">
-                <button type="submit">Login</button>
+                <button type="button" id="loginForm">LoginX</button>
             </div>
             <div id="errorMessage" class="error-message" style="display: none;"></div>
-        </form>
+        </div>
     </div>
 
 </body>

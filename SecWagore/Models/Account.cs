@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SecWagore.Models
 {
     [Table("Account")]
-    public partial class Account
+    public class Account
     {
         /// <summary>
         /// ID

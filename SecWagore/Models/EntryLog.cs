@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SecWagore.Models
 {
-    public partial class EntryLog
+    public class EntryLog
     {
         /// <summary>
         /// ID

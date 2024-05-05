@@ -20,13 +20,16 @@ builder.Services.AddSwaggerGen(options => {
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("SecWagoreContext");
 //builder.Services.AddMvc();
+builder.Services.AddHttpContextAccessor();
+
 //builder.Services.AddDbContext<AppDbContext>(options =>
 //    options.UseSqlServer(connectionString));
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("SecWagoreContext"))
-);
-builder.Services.AddDbContext<SecDbContext>();
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//  options.UseSqlServer(builder.Configuration.GetConnectionString("SecWagoreContext"))
+//);
+builder.Services.AddDbContext<SecDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<CampusService>();

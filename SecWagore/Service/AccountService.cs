@@ -3,20 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SecWagore.Models;
+using SecWagore.Service;
 
-public partial class AccountService 
+public partial class AccountService : BaseService<Campus>
 {
-    SecDbContext _db;
+    private readonly IConfiguration _configuration;
 
-    public AccountService(SecDbContext dbContext)
+    /// <param name="dbModel"></param>
+    /// <param name="configuration"></param>
+    public AccountService(SecDbContext dbContext,
+        IConfiguration configuration
+        ) : base(dbContext)
     {
-        _db = dbContext;
+        _configuration = configuration;
     }
 
     public bool ValidateCredentials(string username, string password)
     {
         // 使用 LINQ 查詢檢查帳戶是否存在並驗證密碼
-        var account = _db.Accounts.FirstOrDefault(a => a.Username == username);
+        var account = DbModel.Accounts.FirstOrDefault(a => a.Username == username);
         if (account != null)
         {
             // 在這裡你可能會使用加密方式進行密碼比對
@@ -32,33 +37,33 @@ public partial class AccountService
 
     public List<Account> GetAllAccounts()
     {
-        return _db.Accounts.ToList();
+        return DbModel.Accounts.ToList();
     }
 
     public Account GetAccountById(string userName)
     {
-        return _db.Accounts.FirstOrDefault(account => account.Username == userName);
+        return DbModel.Accounts.FirstOrDefault(account => account.Username == userName);
     }
 
     public void CreateUser(Account account)
     {
-        _db.Accounts.Add(account);
-        _db.SaveChanges();
+        DbModel.Accounts.Add(account);
+        DbModel.SaveChanges();
     }
 
     public void UpdateAccount(Account account)
     {
-        _db.Entry(account).State = EntityState.Modified;
-        _db.SaveChanges();
+        DbModel.Entry(account).State = EntityState.Modified;
+        DbModel.SaveChanges();
     }
 
     public void DeleteAccount(int id)
     {
-        var account = _db.Accounts.Find(id);
+        var account = DbModel.Accounts.Find(id);
         if (account != null)
         {
-            _db.Accounts.Remove(account);
-            _db.SaveChanges();
+            DbModel.Accounts.Remove(account);
+            DbModel.SaveChanges();
         }
     }
 }

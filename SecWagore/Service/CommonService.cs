@@ -20,6 +20,7 @@ namespace SecWagore.Service
         public CommonService(SecDbContext dbModel,
             IConfiguration configuration) : base(dbModel)
         {
+            _configuration = configuration;
         }
 
     }

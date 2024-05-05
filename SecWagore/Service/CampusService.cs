@@ -1,21 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SecWagore.Models;
+using SecWagore.Service;
 
-public class CampusService
+public class CampusService : BaseService<Campus>
 {
-    private readonly SecDbContext _db;
+    private readonly IConfiguration _configuration;
 
-    public CampusService(SecDbContext dbContext)
+    /// <param name="dbModel"></param>
+    /// <param name="configuration"></param>
+    public CampusService(SecDbContext dbContext,
+        IConfiguration configuration
+        ) : base(dbContext)
     {
-        _db = dbContext;
+        _configuration = configuration;
     }
 
     public List<Campus> GetAllCampus()
     {
-        return _db.Campuses.ToList();
+        //HostName = _configuration.GetSection("MailSetting:HostName").Value,
+        return DbModel.Campuses.ToList();
     }
 
 }

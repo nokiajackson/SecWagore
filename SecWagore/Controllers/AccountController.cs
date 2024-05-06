@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using SecWagore.Heplers;
 using SecWagore.Models;
 using SecWagore.Service;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Reflection;
+using System.Security.Claims;
 
 
 [Route("Api/[controller]")]
@@ -71,17 +74,27 @@ public class AccountController : Controller
     [HttpPost("login")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
     //[SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public Task<IActionResult> Login(LoginModelVM model)
+    public async Task<IActionResult> Login(LoginModelVM model)
     {
         // 驗證用戶名和密碼
         bool isValid = _accountService.ValidateCredentials(model);
         if (isValid)
         {
-            return Task.FromResult<IActionResult>(Ok("Login successful."));
+            // 登錄成功，設置用戶的身份驗證標識
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, model.Username),
+                // 這裏可以設置其他需要記錄的用戶信息
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            return Ok("Login successful.");
         }
         else
         {
-            return Task.FromResult<IActionResult>(Unauthorized("Invalid credentials."));
+            return Unauthorized("Invalid credentials.");
         }
     }
     /// <summary>

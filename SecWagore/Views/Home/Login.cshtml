@@ -10,6 +10,7 @@
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" 
     rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,10 +77,8 @@
             crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" 
             integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <script>
-        (function (undefined) {
-           
-        })();
 
         $(document).ready(function () {
             //'use strict';
@@ -89,103 +88,92 @@
                 full: location.origin + root
             };
 
-            //refreshCaptcha(); 
-            getCampus();
+            new Vue({
+                el: '#app',
+                data: {
+                    username: '',
+                    password: '',
+                    selectedCampus: 1,
+                    campuses: [],
+                    errorMessage: '',
+                },
+                mounted() {
+                    this.getCampuses();
+                },
+                methods: {
+                    getCampuses() {
+                        // 發送 AJAX GET 請求以獲取所有校區數據
+                        fetch(`${window.appRoot.full}Api/Account/GetAllCampuses`)
+                            .then(response => response.json())
+                            .then(data => this.campuses = data)
+                            .catch(error => console.error('Error fetching campuses:', error));
+                    },
+                    login() {
+                        // 檢查用戶名、密碼和所選校區是否為空
+                        if (this.username === '' || this.password === '' || this.selectedCampus === '') {
+                            this.errorMessage = 'Please fill in all fields.';
+                        } else {
+                            // 清除錯誤消息
+                            this.errorMessage = '';
 
-        });
+                            // 構造登錄數據對象
+                            const loginData = {
+                                Username: this.username,
+                                Password: this.password,
+                                Campus: this.selectedCampus
+                            };
+                            console.log(loginData, `${window.appRoot.full}Api/Account/Login`)
 
-        $('loginForm').click(function () {
-            alert('123')
+                            // 發送 AJAX POST 請求以驗證登錄信息
+                            fetch(`${window.appRoot.full}Api/Account/Login`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(loginData)
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        // 登錄成功，跳轉到首頁或其他頁面
+                                        window.location.href = `${window.appRoot.full}Home/EntryRecord`;
+                                    } else {
+                                        // 登錄失敗，顯示錯誤消息
+                                        this.errorMessage = 'Invalid credentials.';
+                                    }
+                                })
+                                .catch(error => console.error('Error logging in:', error));
 
-            var username = $('#username').val();
-            var password = $('#password').val();
-            var campus = $('#campusDropdown').val();
-
-            var captcha = $('#captcha').val();
-
-            var tt = JSON.stringify({
-                username,
-                password,
-                campus
+                        }
+                    }
+                }
             });
-            console.log(tt);
-
-            // var errorMessage = $('#errorMessage');
-            // if (username === '' || password === '' || captcha === '') {
-            //     errorMessage.text('Please fill in all fields.');
-            //     errorMessage.show();
-            // } else {
-            //     errorMessage.hide();
-
-            //     // 發送 AJAX POST 請求到後端驗證 API
-            //     $.ajax({
-            //         url: `${window.appRoot.full}Api/Account/login`,
-            //         method: 'POST',
-            //         contentType: 'application/json',
-            //         data: tt,
-            //         success: function (response) {
-            //             // 登錄成功，重新導向到首頁或其他頁面
-            //             window.location.href = '/home/EntryRecord';
-            //         },
-            //         error: function (xhr, textStatus, errorThrown) {
-            //             // 登錄失敗，顯示錯誤信息
-            //             errorMessage.text('Invalid credentials.');
-            //             errorMessage.show();
-            //         }
-            //     });
-            // }
-
         });
-        function refreshCaptcha() {
-            $.get(`${window.appRoot.full}Api/Account/Captcha`)
-                .done(function (res) {
-                    console.log('res', res)
-                    $('#captchaImage').attr('src', 'data:image/jpeg;base64,' + res);
-                })
-                .fail(function (error) {
-                    console.log('error', error)
-                    console.error('Error refreshing captcha:', error);
-                });
-        }
-        function getCampus() {
-            $.get(`${window.appRoot.full}Api/Account/GetAllCampuses`, function (data) {
-                // 將返回的資料用於動態建立選項
-                data.forEach(function (campus) {
-                    $("#campusDropdown").append(`<option value="${campus.id}">${campus.campusName}</option>`);
-                });
-            });
-        }
 
     </script>
 </head>
 <body>
-    <div class="login-container">
+    <div id="app" class="login-container">
         <h2>Login</h2>
-        <div >
+        <div>
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" required>
+                <input type="text" id="username" v-model="username" required>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" required>
+                <input type="password" id="password" v-model="password" required>
             </div>
             <div class="form-group">
                 <label for="campusDropdown">Campus</label>
-                <select class="form-select" id="campusDropdown"></select>
+                <select class="form-select" id="campusDropdown" v-model="selectedCampus">
+                    <option v-for="campus in campuses" :value="campus.id">{{ campus.campusName }}</option>
+                </select>
             </div>
-            @* <div class="form-group">
-                <label for="captcha">Captcha</label>
-                <img id="captchaImage" src="/Account/Captcha" alt="Captcha Image" />
-                <button type="button" onclick="refreshCaptcha()">Refresh Captcha</button>
-                <input type="text" id="captcha" name="captcha" required>
-            </div> *@
             <div class="form-group">
-                <button type="button" id="loginForm">LoginX</button>
+                <button type="button" @@click="login">Login</button>
             </div>
-            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div  class="error-message" style="display: none;">{{ errorMessage }}</div>
         </div>
     </div>
-
 </body>
 </html>

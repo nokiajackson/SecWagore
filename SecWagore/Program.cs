@@ -15,20 +15,11 @@ try {
 
     });
 
-    //var cnstr = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={builder.Environment.ContentRootPath}App_Data\資料庫檔案;Integrated Security=True;Trusted_Connection=True;";
-
+    builder.Services.AddMvc();
+    builder.Services.AddHttpContextAccessor();
     // Configuration
     var configuration = builder.Configuration;
     var connectionString = configuration.GetConnectionString("SecWagoreContext");
-    //builder.Services.AddMvc();
-    builder.Services.AddHttpContextAccessor();
-
-    //builder.Services.AddDbContext<AppDbContext>(options =>
-    //    options.UseSqlServer(connectionString));
-
-    //builder.Services.AddDbContext<AppDbContext>(options =>
-    //  options.UseSqlServer(builder.Configuration.GetConnectionString("SecWagoreContext"))
-    //);
     builder.Services.AddDbContext<SecDbContext>(options =>
         options.UseSqlServer(connectionString));
 
@@ -37,9 +28,14 @@ try {
     builder.Services.AddScoped<CommonService>();
 
 
-
     //增加驗證方式，使用 cookie 驗證
-    builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
+    builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie(options => {
         //瀏覽器限制cookie 只能經由HTTP(S) 協定來存取
         options.Cookie.HttpOnly = true;
         //未登入時會自動導到登入頁
@@ -64,6 +60,8 @@ try {
     app.UseRouting();
 
     app.UseAuthorization();
+    // 使用 Session
+    app.UseSession();
 
     app.MapControllerRoute(
         name: "default",

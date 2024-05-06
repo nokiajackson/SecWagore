@@ -80,12 +80,20 @@ public class AccountController : Controller
         bool isValid = _accountService.ValidateCredentials(model);
         if (isValid)
         {
-            // 登錄成功，設置用戶的身份驗證標識
+            
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, model.Username),
-                // 這裏可以設置其他需要記錄的用戶信息
             };
+
+            // 登錄成功，設置用戶的身份驗證標識
+            var campus = await _accountService.GetCampusByIdAsync(model.Campus);
+            if (campus != null)
+            {
+                // 添加校區信息到Claim中
+                claims.Add(new Claim("CampusName", value: campus.CampusName.ToString()));
+                
+            }
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
             var authProperties = new AuthenticationProperties { };
@@ -93,6 +101,9 @@ public class AccountController : Controller
                 CookieAuthenticationDefaults.AuthenticationScheme, 
                 principal,
                 authProperties);
+            ViewData["CurrentCampus"] = campus?.CampusName.ToString();
+            // 先暫略過 後續再寫
+
 
             return Ok("Login successful.");
         }
@@ -107,9 +118,10 @@ public class AccountController : Controller
     /// <returns></returns>
     [HttpGet, HttpPost]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
-        //await _accountService.SignOutAsync();
+        HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
         return RedirectToAction("Index", "Home");
     }
 

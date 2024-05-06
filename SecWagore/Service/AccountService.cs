@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SecWagore.Models;
@@ -8,14 +9,17 @@ using SecWagore.Service;
 public partial class AccountService : BaseService<Campus>
 {
     private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     /// <param name="dbModel"></param>
     /// <param name="configuration"></param>
     public AccountService(SecDbContext dbContext,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IHttpContextAccessor httpContextAccessor
         ) : base(dbContext)
     {
         _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public bool ValidateCredentials(LoginModelVM model)
@@ -41,6 +45,11 @@ public partial class AccountService : BaseService<Campus>
     {
         return DbModel.Accounts.FirstOrDefault(account => account.Username == userName);
     }
+    public async Task<Campus> GetCampusByIdAsync(int campusId)
+    {
+        // 使用Entity Framework Core來查詢校區
+        return await DbModel.Campuses.FindAsync(campusId);
+    }
 
     public void CreateUser(Account account)
     {
@@ -48,11 +57,7 @@ public partial class AccountService : BaseService<Campus>
         DbModel.SaveChanges();
     }
 
-    public void UpdateAccount(Account account)
-    {
-        DbModel.Entry(account).State = EntityState.Modified;
-        DbModel.SaveChanges();
-    }
+    
 
     public void DeleteAccount(int id)
     {

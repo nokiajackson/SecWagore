@@ -36,20 +36,21 @@ try {
     });
 
     //增加驗證方式，使用 cookie 驗證
-    //builder.Services.AddAuthentication(options =>
-    //    {
-    //        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    //        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    //        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    //    })
-    //    .AddCookie(options => {
-    //    //瀏覽器限制cookie 只能經由HTTP(S) 協定來存取
-    //    options.Cookie.HttpOnly = true;
-    //    //未登入時會自動導到登入頁
-    //    options.LoginPath = new PathString("/Home/Login");
-    //    //當權限不夠拒絕訪問會自動導到此路徑
-    //    options.AccessDeniedPath = new PathString("/Home/AccessDenied");
-    //});
+    builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie(options =>
+        {
+            //瀏覽器限制cookie 只能經由HTTP(S) 協定來存取
+            options.Cookie.HttpOnly = true;
+            //未登入時會自動導到登入頁
+            options.LoginPath = new PathString("/Home/Login");
+            //當權限不夠拒絕訪問會自動導到此路徑
+            options.AccessDeniedPath = new PathString("/Home/AccessDenied");
+        });
 
     var app = builder.Build();
 
@@ -65,7 +66,7 @@ try {
     app.UseRouting();
     app.UseStaticFiles();
 
-    app.UseAuthentication();
+    app.UseAuthentication();//資料驗證
     app.UseAuthorization();
     // 使用 Session
     app.UseSession();

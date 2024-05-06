@@ -26,10 +26,7 @@ public partial class AccountService : BaseService<Campus>
         {
             // 在這裡你可能會使用加密方式進行密碼比對
             // 這裡僅作為示例，使用明文比較
-            if (account.Password == model.Password)
-            {
-                return true; // 驗證成功
-            }
+            return account.Password == model.Password; // 驗證成功
         }
         return false; // 驗證失敗
     }

@@ -88,7 +88,11 @@ public class AccountController : Controller
             };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            var authProperties = new AuthenticationProperties { };
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme, 
+                principal,
+                authProperties);
 
             return Ok("Login successful.");
         }
@@ -101,13 +105,13 @@ public class AccountController : Controller
     /// 登出
     /// </summary>
     /// <returns></returns>
-    //[HttpGet, HttpPost]
-    //[SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    //public async Task<IActionResult> Logout()
-    //{
-    //    //await _accountService.SignOutAsync();
-    //    return RedirectToAction("Index", "Home");
-    //}
+    [HttpGet, HttpPost]
+    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    public async Task<IActionResult> Logout()
+    {
+        //await _accountService.SignOutAsync();
+        return RedirectToAction("Index", "Home");
+    }
 
     /// <summary>
     /// 驗證圖

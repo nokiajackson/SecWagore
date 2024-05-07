@@ -4,63 +4,49 @@
 <form>
     <div class="mb-3">
         <label for="phone" class="form-label">電話</label>
-        <input type="text" class="form-control" id="phone">
+        <input type="text" class="form-control" v-model="phone">
     </div>
     <div class="mb-3">
         <label for="name" class="form-label">姓名</label>
-        <input type="text" class="form-control" id="name">
+        <input type="text" class="form-control" v-model="name">
     </div>
     <div class="mb-3">
         <label for="number" class="form-label">人數</label>
-        <input type="number" class="form-control" id="number">
+        <input type="number" class="form-control" v-model="number">
     </div>
     <div class="mb-3">
-        <label for="interviewer1" class="form-label">受訪人</label>
-        <input type="text" class="form-control" id="interviewer1">
-    </div>
-    <div class="mb-3">
-        <label for="interviewer2" class="form-label">受訪人</label>
-        <input type="text" class="form-control" id="interviewer2">
+        <label for="interviewee" class="form-label">受訪人</label>
+        <input type="text" class="form-control" v-model="interviewee">
     </div>
     <div class="mb-3">
         <label class="form-label">事由</label>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="reason" id="reason1" value="option1">
+            <input class="form-check-input" type="radio" v-model="Purpose" value="option1">
             <label class="form-check-label" for="reason1">
                 Option 1
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="reason" id="reason2" value="option2">
-            <label class="form-check-label" for="reason2">
-                Option 2
-            </label>
+            <label for="otherDescription" class="form-label">其他說明</label>
+            <input type="text" class="form-control" v-model="otherDescription">
         </div>
-        <!-- Add more options as needed -->
     </div>
-    <div class="mb-3">
-        <label for="otherDescription" class="form-label">其他說明</label>
-        <input type="text" class="form-control" id="otherDescription">
-    </div>
+    
     <div class="mb-3">
         <label for="description" class="form-label">說明</label>
-        <textarea class="form-control" id="description" rows="3"></textarea>
-    </div>
-    <div class="mb-3">
-        <label for="remarks1" class="form-label">備註</label>
-        <textarea class="form-control" id="remarks1" rows="3"></textarea>
+        <textarea class="form-control" v-model="description" rows="3"></textarea>
     </div>
     <div class="mb-3">
         <label for="remarks2" class="form-label">備註</label>
-        <textarea class="form-control" id="remarks2" rows="3"></textarea>
+        <textarea class="form-control" v-model="Note" rows="3"></textarea>
     </div>
     <div class="mb-3">
         <label for="newId1" class="form-label">換證號碼</label>
-        <input type="text" class="form-control" id="newId1">
+        <input type="text" class="form-control" v-model="ReplacementNumber">
     </div>
     <div class="mb-3">
         <label for="newId2" class="form-label">入校時間</label>
-        <input type="text" class="form-control" id="newId2">
+        <input type="text" class="form-control" id="newId2" v-model="EntryTime">
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

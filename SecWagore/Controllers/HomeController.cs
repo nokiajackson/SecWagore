@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SecWagore.Enum;
+using SecWagore.Heplers;
 using SecWagore.Models;
 using SecWagore.Service;
 using System.Diagnostics;
@@ -33,6 +35,9 @@ namespace SecWagore.Controllers
 
         public IActionResult EntryRecord()
         {
+            Array purposeOptions = EnumeratorHelper.GetEnumDescriptions<Purpose>();
+            ViewBag.PurposeOptions = purposeOptions;
+
             return View();
         }
 

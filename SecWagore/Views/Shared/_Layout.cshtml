@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SecWagore.styles.css" asp-append-version="true" />
-    
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     <header>
@@ -24,7 +24,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="EntryRecord">入校登記</a>
                         </li>
                     </ul>
                     <div>
@@ -42,7 +42,19 @@
             @RenderBody()
         </main>
     </div>
+    <div id="liveToast" role="alert" aria-live="assertive" aria-atomic="true" class="toast hide" data-autohide="false">
+        <div class="toast-header">
+            <img src="..." class="rounded me-2" alt="...">
 
+            <strong class="mr-auto">Message</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            {{toast_msg}}
+        </div>
+    </div>
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2024 - SecWagore - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -59,6 +71,7 @@
     </script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

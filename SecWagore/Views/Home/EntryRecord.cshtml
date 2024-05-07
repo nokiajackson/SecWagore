@@ -1,6 +1,104 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
-
-<p>Use this page to detail your site's privacy policy.</p>
+<h1>入校登記</h1>
+<form>
+    <div class="mb-3">
+        <label for="phone" class="form-label">電話</label>
+        <input type="text" class="form-control" id="phone">
+    </div>
+    <div class="mb-3">
+        <label for="name" class="form-label">姓名</label>
+        <input type="text" class="form-control" id="name">
+    </div>
+    <div class="mb-3">
+        <label for="number" class="form-label">人數</label>
+        <input type="number" class="form-control" id="number">
+    </div>
+    <div class="mb-3">
+        <label for="interviewer1" class="form-label">受訪人</label>
+        <input type="text" class="form-control" id="interviewer1">
+    </div>
+    <div class="mb-3">
+        <label for="interviewer2" class="form-label">受訪人</label>
+        <input type="text" class="form-control" id="interviewer2">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">事由</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="reason" id="reason1" value="option1">
+            <label class="form-check-label" for="reason1">
+                Option 1
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="reason" id="reason2" value="option2">
+            <label class="form-check-label" for="reason2">
+                Option 2
+            </label>
+        </div>
+        <!-- Add more options as needed -->
+    </div>
+    <div class="mb-3">
+        <label for="otherDescription" class="form-label">其他說明</label>
+        <input type="text" class="form-control" id="otherDescription">
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">說明</label>
+        <textarea class="form-control" id="description" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="remarks1" class="form-label">備註</label>
+        <textarea class="form-control" id="remarks1" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="remarks2" class="form-label">備註</label>
+        <textarea class="form-control" id="remarks2" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="newId1" class="form-label">換證號碼</label>
+        <input type="text" class="form-control" id="newId1">
+    </div>
+    <div class="mb-3">
+        <label for="newId2" class="form-label">入校時間</label>
+        <input type="text" class="form-control" id="newId2">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+@section scripts{
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                toast_msg: '',//系統訊息固定 #liveToast
+                phone: '',
+                name: '',
+                count: 0,
+                visitor1: '',
+                visitor2: '',
+                reason: '',
+                otherReason: '',
+                comments: '',
+                newCard: '',
+                entryTime: ''
+            },
+            methods: {
+                toast_msg(msg) {
+                    this.toast_msg = msg;
+                    $('#liveToast').toast('show')
+                },
+                submitForm() {
+                    
+                }
+            },
+            mounted() {
+                // Initialize datepicker
+                toast_msg('123')
+                $('#entryTime').datepicker({
+                    format: 'yyyy-mm-dd',
+                    autoclose: true,
+                    todayHighlight: true
+                });
+            },
+        });
+    </script>
+}

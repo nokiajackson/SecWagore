@@ -35,11 +35,11 @@ namespace SecWagore.Heplers
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static List<KeyName> GetEnumDescriptions<T>() where T : struct, Enum
+        public static List<KeyName> GetEnumDescriptions<T>() where T : struct, System.Enum
         {
             var result = new List<KeyName>();
 
-            var enumNames = Enum.GetNames<T>();
+            var enumNames = System.Enum.GetNames<T>();
             var enumType = typeof(T);
 
             foreach (var enumName in enumNames)
@@ -49,7 +49,7 @@ namespace SecWagore.Heplers
 
                 result.Add(new KeyName()
                 {
-                    Key = (int)Enum.Parse(enumType, enumName),
+                    Key = (int)System.Enum.Parse(enumType, enumName),
                     Name = attribute?.Description ?? enumName
                 });
             }
@@ -85,9 +85,9 @@ namespace SecWagore.Heplers
                 return new List<TEnum>();
             }
 
-            return Enum.GetNames<TEnum>()
+            return System.Enum.GetNames<TEnum>()
                 .Where(r => r.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                .Select(r => Enum.Parse<TEnum>(r))
+                .Select(r => System.Enum.Parse<TEnum>(r))
                 .ToList();
         }
 
@@ -99,7 +99,7 @@ namespace SecWagore.Heplers
         /// <param name="enumInput"></param>
         /// <param name="propName"></param>
         /// <returns></returns>
-        public static string? GetEnumAttributePropValue<TEnum, TAttr>(TEnum enumInput, string propName) where TEnum : Enum where TAttr : Attribute
+        public static string? GetEnumAttributePropValue<TEnum, TAttr>(TEnum enumInput, string propName) where TEnum : System.Enum where TAttr : Attribute
         {
             var enumName = enumInput.ToString();
 

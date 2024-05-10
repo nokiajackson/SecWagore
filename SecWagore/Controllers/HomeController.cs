@@ -35,8 +35,8 @@ namespace SecWagore.Controllers
 
         public IActionResult EntryRecord()
         {
-            Array purposeOptions = EnumeratorHelper.GetEnumDescriptions<Purpose>();
-            ViewBag.PurposeOptions = purposeOptions;
+            List<KeyName> purposeOptions = EnumeratorHelper.GetEnumDescriptions<Purpose>();
+            ViewBag.PurposeOptions = purposeOptions.ToArray();
 
             return View();
         }

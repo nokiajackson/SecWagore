@@ -101,7 +101,7 @@ public class AccountController : Controller
                 CookieAuthenticationDefaults.AuthenticationScheme, 
                 principal,
                 authProperties);
-            ViewData["CurrentCampus"] = campus?.CampusName.ToString();
+                ViewData["CurrentCampus"] = campus?.CampusName.ToString();
             // 先暫略過 後續再寫
 
 

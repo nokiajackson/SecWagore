@@ -26,13 +26,7 @@ public partial class AccountService : BaseService<Campus>
     {
         // 使用 LINQ 查詢檢查帳戶是否存在並驗證密碼
         var account = DbModel.Accounts.FirstOrDefault(a => a.Username == model.Username);
-        if (account != null)
-        {
-            // 在這裡你可能會使用加密方式進行密碼比對
-            // 這裡僅作為示例，使用明文比較
-            return account.Password == model.Password; // 驗證成功
-        }
-        return false; // 驗證失敗
+        return account != null && account.CampusId == model.Campus && account.Password == model.Password; 
     }
 
 
@@ -56,8 +50,6 @@ public partial class AccountService : BaseService<Campus>
         DbModel.Accounts.Add(account);
         DbModel.SaveChanges();
     }
-
-    
 
     public void DeleteAccount(int id)
     {

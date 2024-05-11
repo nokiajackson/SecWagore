@@ -23,7 +23,7 @@ namespace SecWagore.Heplers
                 result.Add(new KeyName
                 {
                     Key = (int)i,
-                    Name = type.GetEnumName(i)
+                    Name = type?.GetEnumName(i)
                 });
             }
 

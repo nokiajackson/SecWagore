@@ -16,7 +16,7 @@ namespace SecWagore.Models
         /// <summary>
         /// 關聯校區
         /// </summary>
-        public int? CampusId { get; set; }
+        public int CampusId { get; set; }
         /// <summary>
         /// 帳號
         /// </summary>

@@ -119,7 +119,6 @@
                                 Password: this.password,
                                 Campus: this.selectedCampus
                             };
-                            console.log(loginData, `${window.appRoot.full}Api/Account/Login`)
 
                             // 發送 AJAX POST 請求以驗證登錄信息
                             fetch(`${window.appRoot.full}Api/Account/Login`, {
@@ -130,6 +129,7 @@
                                 body: JSON.stringify(loginData)
                             })
                                 .then(response => {
+                                    console.log(response)
                                     if (response.ok) {
                                         // 登錄成功，跳轉到首頁或其他頁面
                                         window.location.href = `${window.appRoot.full}Home/EntryRecord`;
@@ -166,10 +166,10 @@
                     <option v-for="campus in campuses" :value="campus.id">{{ campus.campusName }}</option>
                 </select>
             </div>
+            <div class="error-message" v-show="errorMessage">{{ errorMessage }}</div>
             <div class="form-group">
                 <button type="button" @@click="login">Login</button>
             </div>
-            <div  class="error-message" style="display: none;">{{ errorMessage }}</div>
         </div>
     </div>
 </body>

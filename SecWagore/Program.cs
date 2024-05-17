@@ -23,9 +23,12 @@ try {
     builder.Services.AddDbContext<SecDbContext>(options =>
         options.UseSqlServer(connectionString));
 
+    // 服務要註冊在這裡
     builder.Services.AddScoped<AccountService>();
     builder.Services.AddScoped<CampusService>();
     builder.Services.AddScoped<CommonService>();
+    builder.Services.AddScoped<EntryLogService>();
+
 
     // 增加 Session 服務
     builder.Services.AddSession(options =>

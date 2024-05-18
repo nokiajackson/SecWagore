@@ -2,7 +2,7 @@
 
 namespace SecWagore.Models.ViewModel
 {
-    public class EntryLogVM
+    public class EntryLogVM : CreatVM
     {
         public string PhoneNumber { get; set; }
         public string FullName { get; set; }
@@ -16,14 +16,9 @@ namespace SecWagore.Models.ViewModel
         /// 入校時間
         /// </summary>
         public DateTime EntryTime { get; set; }
+        /// <summary>
+        /// 離校時間
+        /// </summary>
         public DateTime? ExitTime { get; set; }
-        /// <summary>
-        /// 創建時間
-        /// </summary>
-        public DateTime? CreateDate { get; set; }
-        /// <summary>
-        /// 更新時間
-        /// </summary>
-        public DateTime? UpdateDate { get; set; }
     }
 }

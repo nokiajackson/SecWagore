@@ -7,6 +7,7 @@ using SecWagore.Service;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Reflection;
 using System.Security.Claims;
+using System.Data.Entity.Infrastructure;
 
 
 [Route("Api/[controller]")]
@@ -14,16 +15,16 @@ using System.Security.Claims;
 public class AccountController : Controller
 {
     private readonly AccountService _accountService;
-    CampusService _campusService;
+    CommonService _commonService;
 
 
     public AccountController(
         AccountService accountService,
-        CampusService campusService
+        CommonService commonService
         )
     {
         _accountService = accountService;
-        _campusService = campusService;
+        _commonService = commonService;
 
     }
 
@@ -35,7 +36,7 @@ public class AccountController : Controller
     [ProducesResponseType(typeof(List<Campus>), 200)]
     public IActionResult GetAllCampuses()
     {
-        var campuses = _campusService.GetAllCampus();
+        var campuses = _commonService.GetAllCampus();
         return Ok(campuses);
     }
 
@@ -73,17 +74,21 @@ public class AccountController : Controller
 
     [HttpPost("login")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    //[SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginModelVM model)
     {
         // 驗證用戶名和密碼
         bool isValid = _accountService.ValidateCredentials(model);
         if (isValid)
         {
-            
+            //var account = DbModel.Accounts.FirstOrDefault(a => a.Username == model.Username);
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, model.Username),
+                //new Claim(ClaimTypes.NameIdentifier, User.UserID.ToString())
             };
 
             // 登錄成功，設置用戶的身份驗證標識
@@ -91,7 +96,10 @@ public class AccountController : Controller
             if (campus != null)
             {
                 // 添加校區信息到Claim中
-                claims.Add(new Claim("CampusName", value: campus.CampusName.ToString()));
+                claims.Add(
+                    new Claim("CampusName", value: campus.CampusName.ToString())
+                    );
+
                 
             }
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

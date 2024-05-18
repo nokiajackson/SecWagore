@@ -29,7 +29,6 @@ public partial class AccountService : BaseService<Campus>
         return account != null && account.CampusId == model.Campus && account.Password == model.Password; 
     }
 
-
     public List<Account> GetAllAccounts()
     {
         return DbModel.Accounts.ToList();
@@ -39,6 +38,7 @@ public partial class AccountService : BaseService<Campus>
     {
         return DbModel.Accounts.FirstOrDefault(account => account.Username == userName);
     }
+
     public async Task<Campus> GetCampusByIdAsync(int campusId)
     {
         // 使用Entity Framework Core來查詢校區

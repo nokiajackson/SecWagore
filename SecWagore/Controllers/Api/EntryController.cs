@@ -38,20 +38,9 @@ public class EntryController : Controller
             return BadRequest("Invalid entry log data.");
         }
 
-        var entryLog = new EntryLog
-        {
-            PhoneNumber = model.PhoneNumber,
-            FullName = model.FullName,
-            NumberOfPeople = model.NumberOfPeople,
-            Interviewee = model.Interviewee,
-            Purpose = model.Purpose,
-            OtherDescription = model.OtherDescription,
-            Note = model.Note,
-            ReplacementNumber = model.ReplacementNumber,
-            EntryTime = model.EntryTime
-        };
+        var userName = User.FindFirst(ClaimTypes.Name)?.Value;
 
-        var result = await _entryLogService.SaveEntryLogAsync(entryLog);
+        var result = await _entryLogService.SaveEntryLogAsync(model);
         if (result)
         {
             return Ok("Entry log saved successfully.");

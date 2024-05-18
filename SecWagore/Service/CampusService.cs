@@ -19,10 +19,4 @@ public class CampusService : BaseService<Campus>
         _configuration = configuration;
     }
 
-    public List<Campus> GetAllCampus()
-    {
-        //HostName = _configuration.GetSection("MailSetting:HostName").Value,
-        return DbModel.Campuses.ToList();
-    }
-
 }

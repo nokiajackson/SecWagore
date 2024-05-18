@@ -23,5 +23,13 @@ namespace SecWagore.Service
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// 獲取校園清單
+        /// </summary>
+        /// <returns></returns>
+        public List<Campus> GetAllCampus()
+        {
+            return DbModel.Campuses.ToList();
+        }
     }
 }

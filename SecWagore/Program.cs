@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using SecWagore.Models;
 using SecWagore.Service;
 using System.Reflection;
@@ -64,12 +65,21 @@ try {
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
+    
 
     app.UseHttpsRedirection();
-    app.UseRouting();
     app.UseStaticFiles();
 
-    app.UseAuthentication();//資料驗證
+    // Serve files from the "node_modules" directory
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+            Path.Combine(builder.Environment.ContentRootPath, "node_modules")),
+        RequestPath = "/node_modules"
+    });
+    app.UseRouting();
+
+    app.UseAuthentication(); //資料驗證
     app.UseAuthorization();
     // 使用 Session
     app.UseSession();

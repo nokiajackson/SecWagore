@@ -78,6 +78,7 @@ public class EntryController : Controller
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
     public ActionResult<List<EntryLog>> GetEntryLogs()
     {
+        var campusId = User.FindFirst("CampusId");
         var entryLogs = _entryLogService.GetEntryLogsAsync();
         return Ok(entryLogs);
     }

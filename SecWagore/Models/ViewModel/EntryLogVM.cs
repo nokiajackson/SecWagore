@@ -8,8 +8,11 @@ namespace SecWagore.Models.ViewModel
         public string FullName { get; set; }
         public int NumberOfPeople { get; set; }
         public string Interviewee { get; set; }
-        public string Purpose { get; set; }
+        public Purpose Purpose { get; set; }
+
+        public string PurposeDesc { get; set; }
         public string OtherDescription { get; set; }
+
         public string Note { get; set; }
         public string ReplacementNumber { get; set; }
         /// <summary>

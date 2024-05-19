@@ -50,7 +50,21 @@ namespace SecWagore.Service
 
         public List<EntryLog> GetEntryLogsAsync()
         {
-            return  _context.EntryLogs.ToList();
+            return _context.EntryLogs.Select(x => new EntryLogVM
+            {
+                PhoneNumber = x.PhoneNumber,
+                FullName = x.FullName,
+                NumberOfPeople = x.NumberOfPeople,
+                Interviewee = x.Interviewee,
+                Purpose = x.Purpose,
+                OtherDescription = x.OtherDescription,
+                Note = x.Note,
+                ReplacementNumber = x.ReplacementNumber,
+                EntryTime = x.EntryTime,
+                ExitTime = x.ExitTime,
+                CampusId = x.CampusId,
+                PurposeDesc = x.PurposeEum.GetDescription() // 填充描述
+            }).ToList();
         }
     }
 }

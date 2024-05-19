@@ -29,7 +29,7 @@ namespace SecWagore.Service
         /// <returns></returns>
         public List<Campus> GetAllCampus()
         {
-            return DbModel.Campuses.ToList();
+            return _context.Campuses.ToList();
         }
     }
 }

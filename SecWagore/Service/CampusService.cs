@@ -12,9 +12,9 @@ public class CampusService : BaseService<Campus>
 
     /// <param name="dbModel"></param>
     /// <param name="configuration"></param>
-    public CampusService(SecDbContext dbContext,
+    public CampusService(SecDbContext dbModel,
         IConfiguration configuration
-        ) : base(dbContext)
+        ) : base(dbModel)
     {
         _configuration = configuration;
     }

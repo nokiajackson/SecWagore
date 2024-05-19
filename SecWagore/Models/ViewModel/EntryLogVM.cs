@@ -19,6 +19,6 @@ namespace SecWagore.Models.ViewModel
         /// <summary>
         /// 離校時間
         /// </summary>
-        public DateTime? ExitTime { get; set; }
+        public DateTime? ExitTime { get; set; } = null;
     }
 }

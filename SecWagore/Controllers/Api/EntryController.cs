@@ -39,8 +39,12 @@ public class EntryController : Controller
         }
 
         var userName = User.FindFirst(ClaimTypes.Name)?.Value;
-
+        if(userName != null)
+        {
+            model.UpdateUser = userName;
+        }
         var result = await _entryLogService.SaveEntryLogAsync(model);
+
         if (result)
         {
             return Ok("Entry log saved successfully.");

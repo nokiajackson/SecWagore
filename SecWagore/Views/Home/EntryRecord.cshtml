@@ -41,7 +41,7 @@
     </div>
     <div class="mb-3">
         <label for="entryTime" class="form-label">入校時間</label>
-        <input type="text" class="form-control" id="entryTime" >
+        <input type="text" class="form-control" id="entryTime" v-model="datas.entryTime">
     </div>
     <button type="button" class="btn btn-primary" v-on:click="submitForm"> Submit</button>
     <pre>{{$data.datas}}</pre>
@@ -61,7 +61,11 @@
                     otherDescription: '',
                     note: '',
                     replacementNumber: '',
-                    entryTime: ''
+                    entryTime: null,
+                    exitTime: null,
+                    createDate: null,
+                    updateUser: null,
+
                }
             },
             methods: {
@@ -71,10 +75,11 @@
                 },
                 async submitForm() {
                     const tt = JSON.parse(JSON.stringify(this.datas));
+                    console.log(tt)
                     //之後再加入驗證
                     try {
                         const response =
-                            await axios.post('/api/Entry/Save', tt).then((res) => {
+                            await axios.post(`${window.appRoot.full}api/Entry/Save`, tt).then((res) => {
                                 //const { data } = res;
                                 alert('提交成功');
                             });

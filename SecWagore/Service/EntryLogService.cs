@@ -10,7 +10,7 @@ namespace SecWagore.Service
     /// <summary>
     /// 共通性服務
     /// </summary>
-    public class EntryLogService : BaseService<ApplicationUser>
+    public class EntryLogService : BaseService<EntryLog>
     {
         private readonly IConfiguration _configuration;
 
@@ -28,7 +28,7 @@ namespace SecWagore.Service
 
         public async Task<bool> SaveEntryLogAsync(EntryLogVM model)
         {
-            var vm = DbModel.EntryLogs.Add( new EntryLog
+            var vm = _context.EntryLogs.Add( new EntryLog
             {
                 PhoneNumber = model.PhoneNumber,
                 FullName = model.FullName,
@@ -41,7 +41,7 @@ namespace SecWagore.Service
                 EntryTime = model.EntryTime,
                 CreateDate = DateTime.Now
             });
-            var result = await DbModel.SaveChangesAsync();
+            var result = _context.SaveChanges();
             return result > 0;
         }
     }

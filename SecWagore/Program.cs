@@ -25,6 +25,11 @@ try {
         options.UseSqlServer(connectionString));
 
     // 服務要註冊在這裡
+    //builder.Services.AddScoped<BaseService<EntryLog>>();
+    //builder.Services.AddScoped(typeof(BaseService<>));
+    //builder.Services.AddScoped(typeof(BaseService<>), typeof(BaseService<>));
+
+
     builder.Services.AddScoped<AccountService>();
     builder.Services.AddScoped<CampusService>();
     builder.Services.AddScoped<CommonService>();

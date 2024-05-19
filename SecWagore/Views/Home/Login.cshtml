@@ -75,6 +75,35 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <environment include="Development">
+        <script src="~/node_modules/axios/dist/axios.js"></script>
+    </environment>
+</head>
+<body>
+    <div id="app" class="login-container">
+        <h2>Login</h2>
+        <div>
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" v-model="datas.username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" v-model="datas.password" required>
+            </div>
+            <div class="form-group">
+                <label for="campusDropdown">Campus</label>
+                <select class="form-select" id="campusDropdown" v-model="datas.campus">
+                    <option v-for="campus in campuses" :value="campus.id">{{ campus.campusName }}</option>
+                </select>
+            </div>
+            <div class="error-message" v-show="errorMessage">{{ errorMessage }}</div>
+            <div class="form-group">
+                <button type="button" @@click="login">Login</button>
+            </div>
+        </div>
+    </div>
     <script>
 
         $(document).ready(function () {
@@ -88,9 +117,11 @@
             new Vue({
                 el: '#app',
                 data: {
-                    username: '',
-                    password: '',
-                    selectedCampus: 1,
+                    datas: {
+                        username: '',
+                        password: '',
+                        campus: 1,
+                    },
                     campuses: [],
                     errorMessage: '',
                 },
@@ -107,30 +138,25 @@
                     },
                     login() {
                         // 檢查用戶名、密碼和所選校區是否為空
-                        if (this.username === '' || this.password === '' || this.selectedCampus === '') {
+                        if (this.datas.username === '' || this.datas.password === '' || this.datas.campus === '') {
                             this.errorMessage = 'Please fill in all fields.';
                         } else {
                             // 清除錯誤消息
                             this.errorMessage = '';
 
                             // 構造登錄數據對象
-                            const loginData = {
-                                Username: this.username,
-                                Password: this.password,
-                                Campus: this.selectedCampus
-                            };
 
-                            // 發送 AJAX POST 請求以驗證登錄信息
-                            fetch(`${window.appRoot.full}Api/Account/Login`, {
-                                method: 'POST',
+                            // 獲取防偽令牌的值
+                            const csrfToken = document.querySelector('[name="__RequestVerificationToken"]').value;
+
+                            axios.post(`${window.appRoot.full}Api/Account/Login`, this.datas, {
                                 headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(loginData)
+                                    'Content-Type': 'application/json',
+                                    'RequestVerificationToken': csrfToken // 新增防偽令牌到要求標頭中
+                                }
                             })
                                 .then(response => {
-                                    console.log(response)
-                                    if (response.ok) {
+                                    if (response.status === 200) {
                                         // 登錄成功，跳轉到首頁或其他頁面
                                         window.location.href = `${window.appRoot.full}Home/EntryRecord`;
                                     } else {
@@ -138,8 +164,10 @@
                                         this.errorMessage = 'Invalid credentials.';
                                     }
                                 })
-                                .catch(error => console.error('Error logging in:', error));
-
+                                .catch(error => {
+                                    console.error('Error logging in:', error);
+                                    this.errorMessage = 'Error logging in.';
+                                });
                         }
                     }
                 }
@@ -147,30 +175,6 @@
         });
 
     </script>
-</head>
-<body>
-    <div id="app" class="login-container">
-        <h2>Login</h2>
-        <div>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" v-model="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" v-model="password" required>
-            </div>
-            <div class="form-group">
-                <label for="campusDropdown">Campus</label>
-                <select class="form-select" id="campusDropdown" v-model="selectedCampus">
-                    <option v-for="campus in campuses" :value="campus.id">{{ campus.campusName }}</option>
-                </select>
-            </div>
-            <div class="error-message" v-show="errorMessage">{{ errorMessage }}</div>
-            <div class="form-group">
-                <button type="button" @@click="login">Login</button>
-            </div>
-        </div>
-    </div>
+    
 </body>
 </html>

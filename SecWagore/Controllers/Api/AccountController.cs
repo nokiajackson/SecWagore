@@ -62,9 +62,9 @@ public class AccountController : Controller
 
     [HttpGet("{userName}")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public Task<IActionResult> GetAccountById(string userName)
+    public Task<IActionResult> GetAccountByName(string userName)
     {
-        var account = _accountService.GetAccountById(userName);
+        var account = _accountService.GetAccountByName(userName);
         if (account == null)
         {
             return Task.FromResult<IActionResult>(NotFound("Account not found."));
@@ -88,7 +88,7 @@ public class AccountController : Controller
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, model.Username),
-                //new Claim(ClaimTypes.NameIdentifier, User.UserID.ToString())
+                //new Claim(ClaimTypes.NameIdentifier, model.Campus)
             };
 
             // 登錄成功，設置用戶的身份驗證標識
@@ -98,7 +98,8 @@ public class AccountController : Controller
                 // 添加校區信息到Claim中
                 claims.Add(
                     new Claim("CampusName", value: campus.CampusName.ToString())
-                    );
+                    //new Claim("UserID", value: campus.CampusName.ToString())
+                );
 
                 
             }

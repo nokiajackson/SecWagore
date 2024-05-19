@@ -4,8 +4,7 @@ using SecWagore.Models;
 
 namespace SecWagore.Service
 {
-    public abstract class BaseService<T> : IDisposable
-       where T : class
+    public  class BaseService<T> : IDisposable where T : class
     {
 
         /// <summary>
@@ -16,7 +15,7 @@ namespace SecWagore.Service
         /// <summary>
         /// DbModel
         /// </summary>
-        protected SecDbContext DbModel { get; set; }
+        protected SecDbContext _context { get; set; }
 
         /// <summary>
         /// DbSet
@@ -29,7 +28,7 @@ namespace SecWagore.Service
         /// <param name="dbModel"></param>
         protected BaseService(SecDbContext dbModel)
         {
-            DbModel = dbModel;
+            _context = dbModel;
             EntitySet = dbModel.Set<T>();
         }
 
@@ -59,7 +58,7 @@ namespace SecWagore.Service
             {
                 throw new ArgumentNullException(nameof(instance));
             }
-            DbModel.Entry(instance).State = EntityState.Deleted;
+            _context.Entry(instance).State = EntityState.Deleted;
             return SaveChanges();
         }
 
@@ -74,7 +73,7 @@ namespace SecWagore.Service
             {
                 throw new ArgumentNullException(nameof(instance));
             }
-            DbModel.Entry(instance).State = EntityState.Modified;
+            _context.Entry(instance).State = EntityState.Modified;
             return SaveChanges();
         }
 
@@ -84,8 +83,28 @@ namespace SecWagore.Service
         /// <returns></returns>
         private int SaveChanges()
         {
-            return DbModel.SaveChanges();
+            return _context.SaveChanges();
         }
+
+        /// <summary>
+        /// 儲存
+        /// </summary>
+        /// <returns></returns>
+        //private int SaveChanges()
+        //{
+        //    //SetAuditableValues();
+
+        //    try
+        //    {
+        //        return DbModel.SaveChanges();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //var logger = LogManager.GetCurrentClassLogger();
+        //        //logger.Error(ex, ex.Message);
+        //        throw;
+        //    }
+        //}
 
         /// <summary>
         /// Dispose
@@ -102,11 +121,11 @@ namespace SecWagore.Service
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposing || DbModel == null)
+            if (!disposing || _context == null)
             {
                 return;
             }
-            DbModel.Dispose();
+            _context.Dispose();
         }
     }
 }

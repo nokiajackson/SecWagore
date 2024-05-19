@@ -96,12 +96,10 @@ public class AccountController : Controller
             if (campus != null)
             {
                 // 添加校區信息到Claim中
-                claims.Add(
-                    new Claim("CampusName", value: campus.CampusName.ToString())
-                    //new Claim("UserID", value: campus.CampusName.ToString())
-                );
+                claims.Add( new Claim("CampusName", campus.CampusName.ToString()));
+                claims.Add(new Claim("CampusId", model.Campus.ToString()));
 
-                
+
             }
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);

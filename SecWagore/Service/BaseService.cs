@@ -28,7 +28,7 @@ namespace SecWagore.Service
         /// <param name="dbModel"></param>
         protected BaseService(SecDbContext dbModel)
         {
-            _context = dbModel;
+            _context = dbModel ?? throw new ArgumentNullException(nameof(dbModel));
             EntitySet = dbModel.Set<T>();
         }
 

@@ -39,10 +39,18 @@ namespace SecWagore.Service
                 Note = model.Note,
                 ReplacementNumber = model.ReplacementNumber,
                 EntryTime = model.EntryTime,
+                CampusId = model.CampusId,
                 CreateDate = DateTime.Now
             });
+            //CampusId
+
             var result = _context.SaveChanges();
             return result > 0;
+        }
+
+        public List<EntryLog> GetEntryLogsAsync()
+        {
+            return  _context.EntryLogs.ToList();
         }
     }
 }

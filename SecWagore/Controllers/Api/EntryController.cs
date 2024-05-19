@@ -39,8 +39,15 @@ public class EntryController : Controller
         }
 
         var userName = User.FindFirst(ClaimTypes.Name)?.Value;
-        if(userName != null)
+        var campusId = User.FindFirst("CampusId");
+
+        if (campusId != null && userName != null)
         {
+            int _campusId;
+            if (int.TryParse(campusId.Value, out _campusId))
+            {
+                model.CampusId = _campusId;
+            }
             model.UpdateUser = userName;
         }
         var result = await _entryLogService.SaveEntryLogAsync(model);
@@ -67,6 +74,13 @@ public class EntryController : Controller
     //    return Ok(campuses);
     //}
 
+    [HttpGet("GetEntryLogs")]
+    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    public ActionResult<List<EntryLog>> GetEntryLogs()
+    {
+        var entryLogs = _entryLogService.GetEntryLogsAsync();
+        return Ok(entryLogs);
+    }
 
     [HttpPost("CreateUser")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]

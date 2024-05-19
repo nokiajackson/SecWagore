@@ -1,0 +1,98 @@
+﻿<h1>入校登記</h1>
+
+<form>
+    <div class="mb-3">
+        <label class="form-label">姓名</label>
+        <input type="text" class="form-control" v-model="datas.fullName">
+    </div>
+    <!-- 其他輸入框類似的部分略 -->
+    <!-- 表格 -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>電話</th>
+                <th>人數</th>
+                <th>受訪人</th>
+                <th>事由</th>
+                <th>備註</th>
+                <th>換證號碼</th>
+                <th>入校時間</th>
+                <!-- 額外的搜索列 -->
+                <th>時間區間</th>
+                <th>類別</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="log in entryLogs" :key="log.id">
+                <td>{{ log.fullName }}</td>
+                <td>{{ log.phoneNumber }}</td>
+                <td>{{ log.numberOfPeople }}</td>
+                <td>{{ log.interviewee }}</td>
+                <td>{{ log.purpose }}</td>
+                <td>{{ log.note }}</td>
+                <td>{{ log.replacementNumber }}</td>
+                <td>{{ log.entryTime }}</td>
+                <!-- 額外的搜索列 -->
+                <td>
+                    <input type="text" class="form-control" v-model="searchTimeRange">
+                </td>
+                <td>
+                    <select class="form-control" v-model="searchCategory">
+                        <option value="">選擇類別</option>
+                        <option value="category1">類別1</option>
+                        <option value="category2">類別2</option>
+                        <!-- 其他類別選項 -->
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-primary" v-on:click="submitForm">提交</button>
+    <pre>{{$data.datas}}</pre>
+</form>
+
+@section scripts {
+    <script>
+        window.app = new Vue({
+            el: '#app',
+            data: {
+                toast_msg: '',
+                datas: {
+                    // 你的 data 對象
+                },
+                entryLogs: [], // 存放返回的 entryLogs
+                searchTimeRange: '', // 搜索時間區間
+                searchCategory: '' // 搜索類別
+            },
+            methods: {
+                // 你的方法
+                async submitForm() {
+                    // 你的提交表單方法
+                },
+                // 額外的方法（例如搜索功能）
+                async searchLogs() {
+                    try {
+                        // 發送帶有搜索參數的 GET 請求到 API
+                        const response = await axios.get(`${window.appRoot.full}api/Entry/GetEntryLogs`, {
+                            params: {
+                                timeRange: this.searchTimeRange,
+                                category: this.searchCategory
+                            }
+                        });
+                        // 更新 entryLogs 數據
+                        this.entryLogs = response.data;
+                    } catch (error) {
+                        console.error('搜索錯誤:', error);
+                    }
+                }
+            },
+            mounted() {
+                // 初始化 datepicker
+                // 初始化 entryLogs（如果需要）
+                this.searchLogs();
+            },
+        });
+    </script>
+}

@@ -33,6 +33,11 @@ namespace SecWagore.Controllers
             return View();
         }
 
+        public IActionResult List()
+        {
+            return View();
+        }
+
         public IActionResult EntryRecord()
         {
             List<KeyName> purposeOptions = EnumeratorHelper.GetEnumDescriptions<Purpose>();

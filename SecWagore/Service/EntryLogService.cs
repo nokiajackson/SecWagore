@@ -34,7 +34,7 @@ namespace SecWagore.Service
                 FullName = model.FullName,
                 NumberOfPeople = model.NumberOfPeople,
                 Interviewee = model.Interviewee,
-                Purpose = model.Purpose,
+                Purpose = (byte)model.Purpose,
                 OtherDescription = model.OtherDescription,
                 Note = model.Note,
                 ReplacementNumber = model.ReplacementNumber,
@@ -48,22 +48,58 @@ namespace SecWagore.Service
             return result > 0;
         }
 
-        public List<EntryLog> GetEntryLogsAsync()
+        public List<EntryLogVM> GetEntryLogsAsync(SearchEntryLogVM vm)
         {
-            return _context.EntryLogs.Select(x => new EntryLogVM
+            var query = _context.EntryLogs.AsQueryable();
+
+            if (vm.CampusId.HasValue)
+            {
+                query = query.Where(el => el.CampusId == vm.CampusId.Value);
+            }
+
+            if (!string.IsNullOrEmpty(vm.FullName))
+            {
+                query = query.Where(el => el.FullName.Contains(vm.FullName));
+            }
+
+            //if (vm.Purpose.HasValue)
+            //{
+            //    query = query.Where(el => el.Purpose == vm.Purpose.ToString());
+            //}
+
+            if (vm.EntryTimeStart.HasValue)
+            {
+                query = query.Where(el => el.EntryTime >= vm.EntryTimeStart.Value);
+            }
+
+            if (vm.EntryTimeEnd.HasValue)
+            {
+                query = query.Where(el => el.EntryTime <= vm.EntryTimeEnd.Value);
+            }
+
+            if (vm.ExitTimeStart.HasValue)
+            {
+                query = query.Where(el => el.ExitTime >= vm.ExitTimeStart.Value);
+            }
+
+            if (vm.ExitTimeEnd.HasValue)
+            {
+                query = query.Where(el => el.ExitTime <= vm.ExitTimeEnd.Value);
+            }
+
+            return query
+                .Select(x => new EntryLogVM
             {
                 PhoneNumber = x.PhoneNumber,
                 FullName = x.FullName,
-                NumberOfPeople = x.NumberOfPeople,
+                NumberOfPeople = x.NumberOfPeople??0,
                 Interviewee = x.Interviewee,
-                Purpose = x.Purpose,
+                Purpose = (Purpose)x.Purpose,
                 OtherDescription = x.OtherDescription,
                 Note = x.Note,
                 ReplacementNumber = x.ReplacementNumber,
                 EntryTime = x.EntryTime,
-                ExitTime = x.ExitTime,
-                CampusId = x.CampusId,
-                PurposeDesc = x.PurposeEum.GetDescription() // 填充描述
+                ExitTime = x.ExitTime
             }).ToList();
         }
     }

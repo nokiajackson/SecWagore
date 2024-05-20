@@ -74,11 +74,22 @@ public class EntryController : Controller
     //    return Ok(campuses);
     //}
 
-    [HttpGet("GetEntryLogs")]
+    [HttpGet("EntryLogList")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    public ActionResult<List<EntryLog>> GetEntryLogs()
+    public ActionResult<List<EntryLog>> EntryLogList([FromQuery] SearchEntryLogVM vm)
     {
-        var campusId = User.FindFirst("CampusId");
+        var campusIdClaim = User.FindFirst("CampusId");
+        if (campusIdClaim != null) {
+            
+            if (int.TryParse(campusIdClaim.Value, out int campusId))
+            {
+                vm.CampusId = campusId;
+            }
+            else
+            {
+                throw new Exception("Invalid CampusId format.");
+            }
+        }
         var entryLogs = _entryLogService.GetEntryLogsAsync();
         return Ok(entryLogs);
     }

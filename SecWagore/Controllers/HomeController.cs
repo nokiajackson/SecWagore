@@ -35,6 +35,7 @@ namespace SecWagore.Controllers
 
         public IActionResult List()
         {
+
             return View();
         }
 

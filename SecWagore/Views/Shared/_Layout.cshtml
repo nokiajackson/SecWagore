@@ -81,8 +81,14 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <environment include="Development">
         <script src="~/node_modules/axios/dist/axios.js"></script>
+        <script src="~/node_modules/moment/dist/moment.js"></script>
+        @*  <script src="~/node_modules/moment/dist/locale/zh-tw.js"></script> *@
     </environment>
+    <script>
+        //import moment from 'moment';
+    </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

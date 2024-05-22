@@ -79,8 +79,9 @@ public class EntryController : Controller
     public ActionResult<List<EntryLog>> EntryLogList([FromQuery] SearchEntryLogVM vm)
     {
         var campusIdClaim = User.FindFirst("CampusId");
-        if (campusIdClaim != null) {
-            
+        if (campusIdClaim != null)
+        {
+
             if (int.TryParse(campusIdClaim.Value, out int campusId))
             {
                 vm.CampusId = campusId;
@@ -90,7 +91,7 @@ public class EntryController : Controller
                 throw new Exception("Invalid CampusId format.");
             }
         }
-        var entryLogs = _entryLogService.GetEntryLogsAsync();
+        var entryLogs = _entryLogService.GetEntryLogsAsync(vm);
         return Ok(entryLogs);
     }
 

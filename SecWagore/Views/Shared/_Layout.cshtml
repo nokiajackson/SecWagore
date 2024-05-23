@@ -65,6 +65,8 @@
         </div>
     </footer>
     <script>
+        // import 'moment';
+
         (function (undefined) {
             var root = '@Url.Content("~/")';
             window.appRoot = {
@@ -79,9 +81,11 @@
     <script src="~/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
+
     <environment include="Development">
         <script src="~/node_modules/axios/dist/axios.js"></script>
-        <script src="~/node_modules/moment/dist/moment.js"></script>
+        @* <script src="~/node_modules/moment/dist/moment.js"></script> *@
         @*  <script src="~/node_modules/moment/dist/locale/zh-tw.js"></script> *@
     </environment>
     <script>

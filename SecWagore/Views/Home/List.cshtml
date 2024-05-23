@@ -1,59 +1,79 @@
 ﻿<h1>入校登記</h1>
+<template>
+    <form>
+        <div class="container mt-4">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="col ml-2">姓名</label>
+                    <input type="text" v-model="params.FullName" class="form-control" placeholder="姓名">
+                </div>
+                <div class="col-md-4">
+                    <label>事由</label>
+                    <select v-model="params.Purpose" class="form-control">
+                        <option value="">無</option>
+                        <option v-for="item in enums.purposes" :key="item.key" :value="item.key">{{ item.name }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <input type="text" id="EntryTimeStart" class="form-control" placeholder="進場時間開始">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" id="EntryTimeEnd" class="form-control" placeholder="進場時間結束">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <input type="text" id="ExitTimeStart" class="form-control" placeholder="出場時間開始">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" id="ExitTimeEnd" class="form-control" placeholder="出場時間結束">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-info" @@click="searchLogs">搜索</button>
+                </div>
+            </div>
+        </div>
+        <!-- 表格 -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>電話</th>
+                    <th>人數</th>
+                    <th>受訪人</th>
+                    <th>事由</th>
+                    <th>備註</th>
+                    <th>換證號碼</th>
+                    <th>入校時間</th>
+                    <th>離校時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="log in entryLogs" :key="log.id">
+                    <td>{{ log.fullName }}</td>
+                    <td>{{ log.phoneNumber }}</td>
+                    <td class="text-center">{{ log.numberOfPeople }}</td>
+                    <td>{{ log.interviewee }}</td>
+                    <td>{{ findPurpose(log.purpose) }}</td>
+                    <td>{{ log.note }}</td>
+                    <td>{{ log.replacementNumber }}</td>
+                    <td>{{ formatDate(log.entryTime) }}</td>
+                    <td>{{ formatDate(log.ExitTime) }}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
 
-<form>
-    <div>
-        <input type="text" v-model="params.FullName" placeholder="全名">
-        <select v-model="params.Purpose">
-            <option value="null">選擇目的</option>
-            @* <option v-for="purpose in enum.purposes" :key="purpose" :value="purpose.key">{{ purpose.name }}</option> *@
-        </select>
-        <pre>{{enums.purposes}}</pre>
-        <input type="text" id="EntryTimeStart" placeholder="進場時間開始">
-        <input type="text" id="EntryTimeEnd" placeholder="進場時間結束">
-        <input type="text" id="ExitTimeStart" placeholder="出場時間開始">
-        <input type="text" id="ExitTimeEnd" placeholder="出場時間結束">
-        <button type="button" class="btn btn-info" @@click="searchLogs">搜索</button>
-    </div>
-    <!-- 其他輸入框類似的部分略 -->
-    <!-- 表格 -->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>姓名</th>
-                <th>電話</th>
-                <th>人數</th>
-                <th>受訪人</th>
-                <th>事由</th>
-                <th>備註</th>
-                <th>換證號碼</th>
-                <th>入校時間</th>
-                <!-- 額外的搜索列 -->
-                <th>時間區間</th>
-                <th>類別</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="log in entryLogs" :key="log.id">
-                <td>{{ log.fullName }}</td>
-                <td>{{ log.phoneNumber }}</td>
-                <td>{{ log.numberOfPeople }}</td>
-                <td>{{ log.interviewee }}</td>
-                <td>{{ log.purpose }}</td>
-                <td>{{ log.note }}</td>
-                <td>{{ log.replacementNumber }}</td>
-                <td>{{ formatDate(log.entryTime) }} ~ {{ formatDate(log.ExitTime) }}</td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
+    </form>
+</template>
 
-    <button type="button" class="btn btn-primary" v-on:click="submitForm">提交</button>
-    <pre>{{$data.datas}}</pre>
-</form>
 
 @section scripts {
     <script>
-       
 
         window.app = new Vue({
             el: '#app',
@@ -79,26 +99,34 @@
             },
             methods: {
                 // 你的方法
-                async submitForm() {
-                    // 你的提交表單方法
-                },
                 async fetchEnum() {
-                    const response = await axios.get(`${window.appRoot.full}Common/EnumList`);
-                    console.log(response)
+                    const res = await axios.get(`${window.appRoot.full}Api/Common/EnumList`);
+                    this.enums = res.data;
                 },
                 async searchLogs() {
                     const params = this.params;
                     // 發送帶有搜索參數的 GET 請求到 API
-                    const response = await axios.get(`${window.appRoot.full}api/Entry/EntryLogList`, { params });
+                    const res = await axios.get(`${window.appRoot.full}Api/Entry/EntryLogList`, { params });
                     // 更新 entryLogs 數據
 
-                    this.entryLogs = response.data;
+                    this.entryLogs = res.data;
                 },
                 formatDate(date) {
-                    //return moment(date).format('YYYY-MM-DD HH:mm:ss');
-                }
+                    return moment(date).format('YYYY-MM-DD \r HH:mm:ss');
+                },
+                findPurpose(val) {
+                    if (this.enums.purposes.length > 0 && val) {
+                        const vv = this.enums.purposes.find(x => x.key == val);
+                        if (vv) {
+                            return vv.name;
+                        }
+                        return '無';
+                    }
+                },
             },
-            mounted() {
+            async mounted() {
+                // 初始化 entryLogs（如果需要）
+                await this.fetchEnum();
                 // 初始化 datepicker
                 $('#EntryTimeStart').datepicker().on('changeDate', (e) => {
                     this.params.EntryTimeStart = e.target.value;
@@ -113,8 +141,7 @@
                     this.params.ExitTimeEnd = e.target.value;
                 });
 
-                // 初始化 entryLogs（如果需要）
-                this.fetchEnum();
+                
                 this.searchLogs();
             },
         });

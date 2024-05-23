@@ -62,10 +62,11 @@ namespace SecWagore.Service
                 query = query.Where(el => el.FullName.Contains(vm.FullName));
             }
 
-            //if (vm.Purpose.HasValue)
-            //{
-            //    query = query.Where(el => el.Purpose == vm.Purpose.ToString());
-            //}
+            if (vm.Purpose.HasValue)
+            {
+                query = query.Where(el => el.Purpose == (byte)vm.Purpose.Value);
+
+            }
 
             if (vm.EntryTimeStart.HasValue)
             {

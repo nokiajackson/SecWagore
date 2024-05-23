@@ -1,0 +1,107 @@
+﻿@{
+}
+<h1>入校登記</h1>
+<form>
+    <div class="mb-3">
+        <label class="form-label">姓名</label>
+        <input type="text" class="form-control" v-model="datas.fullName">
+    </div>
+    <div class="mb-3">
+        <label  class="form-label">電話</label>
+        <input type="text" class="form-control" v-model="$data.datas.phoneNumber">
+    </div>
+    <div class="mb-3">
+        <label  class="form-label">人數</label>
+        <input type="number" class="form-control" v-model.number="datas.numberOfPeople">
+    </div>
+    <div class="mb-3">
+        <label  class="form-label">受訪人</label>
+        <input type="text" class="form-control" v-model="datas.interviewee">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">事由 : </label>
+        @foreach (var option in ViewBag.PurposeOptions)
+        {
+            <label class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" v-model="datas.purpose" :value="'@option.Key'">
+                <span class="form-check-label" for="reason1">@option.Name</span>
+            </label>
+        }
+        <div class="form-check form-check-inline col">
+            <input type="text" class="form-control" v-model="datas.otherDescription" placeholder="其他說明">
+        </div>
+    </div>
+    <div class="mb-3">
+        <label  class="form-label">備註</label>
+        <textarea class="form-control" v-model="datas.note" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <label  class="form-label">換證號碼</label>
+        <input type="text" class="form-control" v-model="datas.replacementNumber">
+    </div>
+    <div class="mb-3">
+        <label for="entryTime" class="form-label">入校時間</label>
+        <input type="text" class="form-control" id="entryTime" v-model="datas.entryTime">
+    </div>
+    <button type="button" class="btn btn-primary" v-on:click="submitForm"> Submit</button>
+    <pre>{{$data.datas}}</pre>
+</form>
+@section scripts{
+    <script>
+        window.app = new Vue({  
+            el: '#app',
+            data: {
+               toast_msg: '',//系統訊息固定 #liveToast
+               datas:{
+                    phoneNumber: null,
+                    fullName: '',
+                    numberOfPeople: 0,
+                    interviewee: '',
+                    purpose: '',
+                    otherDescription: '',
+                    note: '',
+                    replacementNumber: '',
+                    entryTime: null,
+                    exitTime: null,
+                    createDate: null,
+                    updateUser: null,
+
+               }
+            },
+            methods: {
+                toastMsg(msg) {
+                    this.toast_msg = msg;
+                    $('#liveToast').toast('show');
+                },
+                async submitForm() {
+                    const tt = JSON.parse(JSON.stringify(this.datas));
+                    console.log(tt)
+                    //之後再加入驗證
+                    try {
+                        const response =
+                            await axios.post(`${window.appRoot.full}api/Entry/Save`, tt).then((res) => {
+                                //const { data } = res;
+                                alert('提交成功');
+                            });
+                    } catch (error) {
+                        console.error('提交失敗:', error);
+                        alert('提交失敗');
+                    }
+                }
+            },
+            created() { },
+            mounted() {
+                // Initialize datepicker
+                // this.toastMsg('123')
+                const vm = this;
+                $('#entryTime').datepicker({
+                    format: 'yyyy-mm-dd',
+                    autoclose: true,
+                    todayHighlight: true
+                }).on('changeDate', function (e) {
+                    vm.datas.entryTime = e.format(0, 'yyyy-mm-dd');
+                });
+            },
+        });
+    </script>
+}

@@ -20,7 +20,16 @@ namespace SecWagore.Service
         public CommonService(SecDbContext dbModel,
             IConfiguration configuration) : base(dbModel)
         {
+            _configuration = configuration;
         }
 
+        /// <summary>
+        /// 獲取校園清單
+        /// </summary>
+        /// <returns></returns>
+        public List<Campus> GetAllCampus()
+        {
+            return _context.Campuses.ToList();
+        }
     }
 }

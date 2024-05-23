@@ -1,64 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SecWagore.Models;
+using SecWagore.Service;
 
-public class AccountService : SecDbContext
+public partial class AccountService : BaseService<Campus>
 {
-    private readonly SecDbContext _db;
+    private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AccountService(SecDbContext dbContext)
+    /// <param name="dbModel"></param>
+    /// <param name="configuration"></param>
+    public AccountService(SecDbContext dbContext,
+        IConfiguration configuration,
+        IHttpContextAccessor httpContextAccessor
+        ) : base(dbContext)
     {
-        _db = dbContext;
+        _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    public bool ValidateCredentials(string username, string password)
+    public bool ValidateCredentials(LoginModelVM model)
     {
         // 使用 LINQ 查詢檢查帳戶是否存在並驗證密碼
-        var account = _db.Accounts.FirstOrDefault(a => a.Username == username);
-        if (account != null)
-        {
-            // 在這裡你可能會使用加密方式進行密碼比對
-            // 這裡僅作為示例，使用明文比較
-            if (account.Password == password)
-            {
-                return true; // 驗證成功
-            }
-        }
-        return false; // 驗證失敗
+        var account = _context.Accounts.FirstOrDefault(a => a.Username == model.Username);
+        return account != null && account.CampusId == model.Campus && account.Password == model.Password; 
     }
-
 
     public List<Account> GetAllAccounts()
     {
-        return _db.Accounts.ToList();
+        return _context.Accounts.ToList();
     }
 
-    public Account GetAccountById(int id)
+    public Account GetAccountByName(string userName)
     {
-        return _db.Accounts.FirstOrDefault(account => account.Id == id);
+        return _context.Accounts.FirstOrDefault(account => account.Username == userName);
+    }
+    public Account GetAccountById(int userId)
+    {
+        return _context.Accounts.FirstOrDefault(account => account.Id == userId);
     }
 
-    public void AddAccount(Account account)
+    public async Task<Campus> GetCampusByIdAsync(int campusId)
     {
-        _db.Accounts.Add(account);
-        _db.SaveChanges();
+        // 使用Entity Framework Core來查詢校區
+        return await _context.Campuses.FindAsync(campusId);
     }
 
-    public void UpdateAccount(Account account)
+    public void CreateUser(Account account)
     {
-        _db.Entry(account).State = EntityState.Modified;
-        _db.SaveChanges();
+        _context.Accounts.Add(account);
+        _context.SaveChanges();
     }
 
     public void DeleteAccount(int id)
     {
-        var account = _db.Accounts.Find(id);
+        var account = _context.Accounts.Find(id);
         if (account != null)
         {
-            _db.Accounts.Remove(account);
-            _db.SaveChanges();
+            _context.Accounts.Remove(account);
+            _context.SaveChanges();
         }
     }
 }

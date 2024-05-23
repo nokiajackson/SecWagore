@@ -1,0 +1,122 @@
+﻿<h1>入校登記</h1>
+
+<form>
+    <div>
+        <input type="text" v-model="params.FullName" placeholder="全名">
+        <select v-model="params.Purpose">
+            <option value="null">選擇目的</option>
+            @* <option v-for="purpose in enum.purposes" :key="purpose" :value="purpose.key">{{ purpose.name }}</option> *@
+        </select>
+        <pre>{{enums.purposes}}</pre>
+        <input type="text" id="EntryTimeStart" placeholder="進場時間開始">
+        <input type="text" id="EntryTimeEnd" placeholder="進場時間結束">
+        <input type="text" id="ExitTimeStart" placeholder="出場時間開始">
+        <input type="text" id="ExitTimeEnd" placeholder="出場時間結束">
+        <button type="button" class="btn btn-info" @@click="searchLogs">搜索</button>
+    </div>
+    <!-- 其他輸入框類似的部分略 -->
+    <!-- 表格 -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>電話</th>
+                <th>人數</th>
+                <th>受訪人</th>
+                <th>事由</th>
+                <th>備註</th>
+                <th>換證號碼</th>
+                <th>入校時間</th>
+                <!-- 額外的搜索列 -->
+                <th>時間區間</th>
+                <th>類別</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="log in entryLogs" :key="log.id">
+                <td>{{ log.fullName }}</td>
+                <td>{{ log.phoneNumber }}</td>
+                <td>{{ log.numberOfPeople }}</td>
+                <td>{{ log.interviewee }}</td>
+                <td>{{ log.purpose }}</td>
+                <td>{{ log.note }}</td>
+                <td>{{ log.replacementNumber }}</td>
+                <td>{{ formatDate(log.entryTime) }} ~ {{ formatDate(log.ExitTime) }}</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-primary" v-on:click="submitForm">提交</button>
+    <pre>{{$data.datas}}</pre>
+</form>
+
+@section scripts {
+    <script>
+       
+
+        window.app = new Vue({
+            el: '#app',
+            data: {
+                toast_msg: '',
+                enums: {
+                    purposes: [],
+                },
+                params: {
+                    FullName: null,
+                    Purpose: '',
+                    EntryTimeStart: null,
+                    EntryTimeEnd: null,
+                    ExitTimeStart: null,
+                    ExitTimeEnd: null,
+                },
+                datas: {
+                    // 你的 data 對象
+                },
+                entryLogs: [], // 存放返回的 entryLogs
+                searchTimeRange: '', // 搜索時間區間
+                searchCategory: '' // 搜索類別
+            },
+            methods: {
+                // 你的方法
+                async submitForm() {
+                    // 你的提交表單方法
+                },
+                async fetchEnum() {
+                    const response = await axios.get(`${window.appRoot.full}Common/EnumList`);
+                    console.log(response)
+                },
+                async searchLogs() {
+                    const params = this.params;
+                    // 發送帶有搜索參數的 GET 請求到 API
+                    const response = await axios.get(`${window.appRoot.full}api/Entry/EntryLogList`, { params });
+                    // 更新 entryLogs 數據
+
+                    this.entryLogs = response.data;
+                },
+                formatDate(date) {
+                    //return moment(date).format('YYYY-MM-DD HH:mm:ss');
+                }
+            },
+            mounted() {
+                // 初始化 datepicker
+                $('#EntryTimeStart').datepicker().on('changeDate', (e) => {
+                    this.params.EntryTimeStart = e.target.value;
+                });
+                $('#EntryTimeEnd').datepicker().on('changeDate', (e) => {
+                    this.params.EntryTimeEnd = e.target.value;
+                });
+                $('#ExitTimeStart').datepicker().on('changeDate', (e) => {
+                    this.params.ExitTimeStart = e.target.value;
+                });
+                $('#ExitTimeEnd').datepicker().on('changeDate', (e) => {
+                    this.params.ExitTimeEnd = e.target.value;
+                });
+
+                // 初始化 entryLogs（如果需要）
+                this.fetchEnum();
+                this.searchLogs();
+            },
+        });
+    </script>
+}

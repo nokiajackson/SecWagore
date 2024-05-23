@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SecWagore.Models
 {
-    public partial class EntryLog
+    public class EntryLog
     {
         /// <summary>
         /// ID
@@ -32,7 +32,7 @@ namespace SecWagore.Models
         /// <summary>
         /// 事由(ENUM)
         /// </summary>
-        public string Purpose { get; set; } = null!;
+        public byte Purpose { get; set; } 
         /// <summary>
         /// 其他說明
         /// </summary>

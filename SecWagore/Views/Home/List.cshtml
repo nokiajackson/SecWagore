@@ -98,7 +98,6 @@
                 searchCategory: '' // 搜索類別
             },
             methods: {
-                // 你的方法
                 async fetchEnum() {
                     const res = await axios.get(`${window.appRoot.full}Api/Common/EnumList`);
                     this.enums = res.data;

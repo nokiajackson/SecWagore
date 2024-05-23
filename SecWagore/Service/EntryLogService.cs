@@ -68,25 +68,21 @@ namespace SecWagore.Service
 
             }
 
-            if (vm.EntryTimeStart.HasValue)
+            if (vm.EntryTimeStart.HasValue || vm.EntryTimeEnd.HasValue)
             {
-                query = query.Where(el => el.EntryTime >= vm.EntryTimeStart.Value);
+                query = query.Where(el =>
+                    (!vm.EntryTimeStart.HasValue || el.EntryTime >= vm.EntryTimeStart.Value) &&
+                    (!vm.EntryTimeEnd.HasValue || el.EntryTime <= vm.EntryTimeEnd.Value));
             }
 
-            if (vm.EntryTimeEnd.HasValue)
+
+            if (vm.ExitTimeStart.HasValue || vm.ExitTimeEnd.HasValue)
             {
-                query = query.Where(el => el.EntryTime <= vm.EntryTimeEnd.Value);
+                query = query.Where(el =>
+                    (!vm.ExitTimeStart.HasValue || el.ExitTime >= vm.ExitTimeStart.Value) &&
+                    (!vm.ExitTimeEnd.HasValue || el.ExitTime <= vm.ExitTimeEnd.Value));
             }
 
-            if (vm.ExitTimeStart.HasValue)
-            {
-                query = query.Where(el => el.ExitTime >= vm.ExitTimeStart.Value);
-            }
-
-            if (vm.ExitTimeEnd.HasValue)
-            {
-                query = query.Where(el => el.ExitTime <= vm.ExitTimeEnd.Value);
-            }
 
             return query
                 .Select(x => new EntryLogVM

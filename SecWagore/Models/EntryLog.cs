@@ -52,7 +52,7 @@ namespace SecWagore.Models
         /// <summary>
         /// 離校時間
         /// </summary>
-        public DateTime ExitTime { get; set; }
+        public DateTime? ExitTime { get; set; }
         /// <summary>
         /// 創建時間
         /// </summary>

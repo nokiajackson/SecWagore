@@ -15,5 +15,5 @@ public class SearchEntryLogVM
     /// </summary>
     public DateTime? ExitTimeStart { get; set; } = null;
     public DateTime? ExitTimeEnd { get; set; } = null;
-    public int? CampusId { get; set; }
+    public int? CampusId { get; set; }= 0;
 }

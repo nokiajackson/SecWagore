@@ -70,9 +70,15 @@ namespace SecWagore.Service
 
             if (vm.EntryTimeStart.HasValue || vm.EntryTimeEnd.HasValue)
             {
-                query = query.Where(el =>
-                    (!vm.EntryTimeStart.HasValue || el.EntryTime >= vm.EntryTimeStart.Value) &&
-                    (!vm.EntryTimeEnd.HasValue || el.EntryTime <= vm.EntryTimeEnd.Value));
+                if (vm.EntryTimeStart.HasValue)
+                {
+                    query = query.Where(el => el.EntryTime >= vm.EntryTimeStart.Value);
+                }
+
+                if (vm.EntryTimeEnd.HasValue)
+                {
+                    query = query.Where(el => el.EntryTime <= vm.EntryTimeEnd.Value);
+                }
             }
 
 

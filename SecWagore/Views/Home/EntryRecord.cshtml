@@ -17,9 +17,9 @@
             <!-- Left Column -->
             <div class="col-md-4">
                 <div class="form-group" v-if="!userIsAuthenticated">
-                    <label class="form-label" for="campusDropdown">校區</label>
-                    <select class="form-select" id="campusDropdown" v-model="datas.campusId">
-                        <option value="">請選擇校區</option>
+                    <label class="form-label" >校區</label>
+                    <select class="form-select" v-model="datas.campusId">
+                        <option :value="null">請選擇校區</option>
                         <option v-for="campus in campuses" :value="campus.id">{{ campus.campusName }}</option>
                     </select>
                 </div>
@@ -48,7 +48,7 @@
                     @foreach (var option in ViewBag.PurposeOptions)
                     {
                         <label class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" v-model="datas.purpose" :value="'@option.Key'">
+                            <input class="form-check-input" type="radio" v-model="datas.purpose" :value="@option.Key">
                             <span class="form-check-label" for="reason1">@option.Name</span>
                         </label>
                     }
@@ -64,15 +64,27 @@
                     <label class="form-label">換證號碼</label>
                     <input type="text" class="form-control" v-model="datas.replacementNumber">
                 </div>
-                <div class="mb-3">
-                    <label for="entryTime" class="form-label">入校時間</label>
-                    <input type="text" class="form-control" id="entryTime" v-model="datas.entryTime">
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <label for="entryTime" class="form-label">入校日期</label>
+                        <input type="text" class="form-control" id="entryTime" v-model="datas.entryDate">
+                    </div>
+                    <div class="col-4">
+                        <label for="entryTime" class="form-label">入校時間</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" 
+                                   v-model.number="datas.entryHour" >
+                            <input type="number" class="form-control" 
+                                   v-model.number="datas.entryMin" >
+                        </div>
+                    </div>
                 </div>
             </div>
             <button type="button" class="btn btn-primary" v-on:click="submitForm"> 送出</button>
         </div>
+
         <div class="row">
-            <table class="table table-border border mt-2" v-if="userIsAuthenticated">
+            <table class="table table-striped border mt-2" v-if="userIsAuthenticated">
                 <thead>
                     <tr>
                         <th>姓名</th>
@@ -120,8 +132,28 @@
         var isAuthenticated = @isAuthenticated.ToString().ToLower();
     </script>
     <script>
+
         window.app = new Vue({  
             el: '#app',
+            components: {
+                //VueNumeric
+            },
+            watch: {
+                'datas.entryHour':  (newVal)=> {
+                    if (newVal < 0) {
+                        this.datas.entryHour = 0;
+                    } else if (newVal > 23) {
+                        this.datas.entryHour = 23;
+                    }
+                },
+                'datas.entryMin': (newVal) => {
+                    if (newVal < 0) {
+                        this.datas.entryMin = 0;
+                    } else if (newVal > 59) {
+                        this.datas.entryMin = 59;
+                    }
+                }
+            },
             data: {
                 toast_msg: '',//系統訊息固定 #liveToast
                 userIsAuthenticated: isAuthenticated, //用頁面判斷是否為登入
@@ -131,14 +163,14 @@
                 campuses: [],
                 params: {
                     FullName: null,
-                    Purpose: '',
+                    Purpose: null,
                     EntryTimeStart: null,
                     EntryTimeEnd: null,
                     
                 },
                 entryLogs: [], // 存放返回的 entryLogs
                 datas:{
-                    campusId: '',
+                    campusId: null,
                     phoneNumber: null,
                     fullName: '',
                     numberOfPeople: 0,
@@ -148,9 +180,9 @@
                     note: '',
                     replacementNumber: '',
                     entryTime: null,
-                    exitTime: null,
-                    createDate: null,
-                    updateUser: null,
+                    exitDate: null,
+                    entryHour: 0,
+                    entryMin: 0,
                }
             },
             methods: {
@@ -160,13 +192,14 @@
                 },
                 async submitForm() {
                     const tt = JSON.parse(JSON.stringify(this.datas));
-                    console.log(tt)
+
                     //之後再加入驗證
                     try {
                         const response =
                             await axios.post(`${window.appRoot.full}api/Entry/Save`, tt).then((res) => {
                                 //const { data } = res;
                                 alert('提交成功');
+                                this.searchLogs();
                             });
                     } catch (error) {
                         console.error('提交失敗:', error);

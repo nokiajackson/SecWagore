@@ -1,7 +1,7 @@
-﻿using SecWagore.Heplers;
+﻿using SecWagore.Helpers;
 using System.Collections.Generic;
 
-namespace SecWagore.Heplers
+namespace SecWagore.Helpers
 {
     public static class ResultHelper
     {

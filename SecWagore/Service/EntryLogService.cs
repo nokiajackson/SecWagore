@@ -90,20 +90,25 @@ namespace SecWagore.Service
             }
 
 
-            return query
+
+            var result = query
                 .Select(x => new EntryLogVM
-            {
-                PhoneNumber = x.PhoneNumber,
-                FullName = x.FullName,
-                NumberOfPeople = x.NumberOfPeople??0,
-                Interviewee = x.Interviewee,
-                Purpose = (Purpose)x.Purpose,
-                OtherDescription = x.OtherDescription,
-                Note = x.Note,
-                ReplacementNumber = x.ReplacementNumber,
-                EntryTime = x.EntryTime,
-                ExitTime = x.ExitTime
-            }).ToList();
+                {
+                    PhoneNumber = x.PhoneNumber,
+                    FullName = x.FullName,
+                    NumberOfPeople = x.NumberOfPeople ?? 0,
+                    Interviewee = x.Interviewee,
+                    Purpose = (Purpose)x.Purpose,
+                    OtherDescription = x.OtherDescription,
+                    Note = x.Note,
+                    ReplacementNumber = x.ReplacementNumber,
+                    EntryTime = x.EntryTime,
+                    ExitTime = x.ExitTime
+                })
+                .ToList();
+
+            return result;
+
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using SecWagore.Heplers;
+using SecWagore.Helpers;
 using SecWagore.Models;
 using SecWagore.Service;
 using Swashbuckle.AspNetCore.Annotations;

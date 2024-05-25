@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SecWagore.Enum;
-using SecWagore.Heplers;
+using SecWagore.Helpers;
 using SecWagore.Models;
 using SecWagore.Service;
 using System.Diagnostics;

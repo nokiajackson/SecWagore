@@ -3,9 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace SecWagore.Heplers
+namespace SecWagore.Helpers
 {
-
     public class Result<T> : IResult<T> where T : class
     {
 

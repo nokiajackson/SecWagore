@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System;
 
-namespace SecWagore.Heplers
+namespace SecWagore.Helpers
 {
     public static class EnumeratorHelper
     {

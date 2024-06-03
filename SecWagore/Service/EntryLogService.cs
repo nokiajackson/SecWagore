@@ -48,7 +48,7 @@ namespace SecWagore.Service
             return result > 0;
         }
 
-        public List<EntryLogVM> GetEntryLogsAsync(SearchEntryLogVM vm)
+        public List<EntryLogVM> GetEntryLogsList(SearchEntryLogVM vm)
         {
             var query = _context.EntryLogs.AsQueryable();
 
@@ -62,7 +62,7 @@ namespace SecWagore.Service
                 query = query.Where(el => el.FullName.Contains(vm.FullName));
             }
 
-            if (vm.Purpose.HasValue)
+            if (vm.Purpose.HasValue && vm.Purpose.Value!=0)
             {
                 query = query.Where(el => el.Purpose == (byte)vm.Purpose.Value);
 
@@ -89,6 +89,7 @@ namespace SecWagore.Service
                     (!vm.ExitTimeEnd.HasValue || el.ExitTime <= vm.ExitTimeEnd.Value));
             }
 
+            var sql = query.ToQueryString();
 
 
             var result = query

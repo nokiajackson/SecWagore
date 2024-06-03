@@ -91,7 +91,7 @@ public class EntryController : Controller
                 throw new Exception("Invalid CampusId format.");
             }
         }
-        var entryLogs = _entryLogService.GetEntryLogsAsync(vm);
+        var entryLogs = _entryLogService.GetEntryLogsList(vm);
         return Ok(entryLogs);
     }
 

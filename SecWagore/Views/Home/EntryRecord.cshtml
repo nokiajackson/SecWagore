@@ -65,24 +65,24 @@
                     <input type="text" class="form-control" v-model="datas.replacementNumber">
                 </div>
                 <div class="row mb-3">
-                    <div class="col-4">
+                    <div class="col-6">
                         <label for="entryTime" class="form-label">入校日期</label>
-                        <input type="text" class="form-control" id="entryTime" v-model="datas.entryDate">
+                        <input type="text" class="form-control" id="entryTime" v-model="entryTime" v-on:change="combineEntryTime">
+                        <button type="button" class="btn btn-sm btn-outline-primary" v-on:click="setCurrentDateTime">帶入現在時間</button>
                     </div>
                     <div class="col-4">
                         <label for="entryTime" class="form-label">入校時間</label>
                         <div class="input-group">
                             <input type="number" class="form-control" 
-                                   v-model.number="datas.entryHour" >
+                                   v-model.number="entryHour" v-on:change="combineEntryTime">
                             <input type="number" class="form-control" 
-                                   v-model.number="datas.entryMin" >
+                                   v-model.number="entryMin" v-on:change="combineEntryTime">
                         </div>
                     </div>
                 </div>
             </div>
             <button type="button" class="btn btn-primary" v-on:click="submitForm"> 送出</button>
         </div>
-
         <div class="row">
             <table class="table table-striped border mt-2" v-if="userIsAuthenticated">
                 <thead>
@@ -139,18 +139,18 @@
                 //VueNumeric
             },
             watch: {
-                'datas.entryHour':  (newVal)=> {
+                'datas.entryHour': function (newVal) {
                     if (newVal < 0) {
-                        this.datas.entryHour = 0;
+                        this.entryHour = 0;
                     } else if (newVal > 23) {
-                        this.datas.entryHour = 23;
+                        this.entryHour = 23;
                     }
                 },
-                'datas.entryMin': (newVal) => {
+                'datas.entryMin': function (newVal)  {
                     if (newVal < 0) {
-                        this.datas.entryMin = 0;
+                        this.entryMin = 0;
                     } else if (newVal > 59) {
-                        this.datas.entryMin = 59;
+                        this.entryMin = 59;
                     }
                 }
             },
@@ -169,6 +169,9 @@
                     
                 },
                 entryLogs: [], // 存放返回的 entryLogs
+                entryHour: 0,
+                entryMin: 0,
+                entryTime: null,
                 datas:{
                     campusId: null,
                     phoneNumber: null,
@@ -181,14 +184,19 @@
                     replacementNumber: '',
                     entryTime: null,
                     exitDate: null,
-                    entryHour: 0,
-                    entryMin: 0,
                }
             },
             methods: {
                 toastMsg(msg) {
                     this.toast_msg = msg;
                     $('#liveToast').toast('show');
+                },
+                setCurrentDateTime() {
+                    const now = moment();
+                    this.entryTime = now.format('YYYY-MM-DD');
+                    this.entryHour = now.hour();
+                    this.entryMin = now.minute();
+                    this.combineEntryTime(); // 合併時間並更新 datas.entryTime
                 },
                 async submitForm() {
                     const tt = JSON.parse(JSON.stringify(this.datas));
@@ -199,8 +207,8 @@
                             await axios.post(`${window.appRoot.full}api/Entry/Save`, tt).then((res) => {
                                 //const { data } = res;
                                 alert('提交成功');
-                                this.searchLogs();
                             });
+                        this.searchLogList();
                     } catch (error) {
                         console.error('提交失敗:', error);
                         alert('提交失敗');
@@ -215,14 +223,22 @@
                     const res = await axios.get(`${window.appRoot.full}Api/Common/EnumList`);
                     this.enums = res.data;
                 },
-                async searchLogs() {
+                combineEntryTime() {
+                    if (this.entryTime) {
+                        const combinedTime = `${this.entryTime} ${String(this.entryHour).padStart(2, '0')}:${String(this.entryMin).padStart(2, '0')}:00`;
+                        this.datas.entryTime = moment(combinedTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DDTHH:mm:ss');
+                    } else {
+                        this.datas.entryTime = null;
+                    }
+                },
+                async searchLogList() {
                     const params = this.params;
                     const today = moment().format('YYYY-MM-DD');
                     params.EntryTimeStart = moment(today).startOf('day').format('YYYY-MM-DD HH:mm:ss');
                     params.EntryTimeEnd = moment(today).endOf('day').format('YYYY-MM-DD HH:mm:ss');
                     params.ExitTimeStart = null;
                     params.ExitTimeEnd = null;
-
+                    console.log(params)
                     // 發送帶有搜索參數的 GET 請求到 API
                     const res = await axios.get(`${window.appRoot.full}Api/Entry/EntryLogList`, { params });
                     // 更新 entryLogs 數據
@@ -234,9 +250,9 @@
                 },
                 findPurpose(val) {
                     if (this.enums.purposes.length > 0 && val) {
-                        const vv = this.enums.purposes.find(x => x.key == val);
-                        if (vv) {
-                            return vv.name;
+                        const tt = this.enums.purposes.find(x => x.key == val);
+                        if (tt) {
+                            return tt.name;
                         }
                         return '無';
                     }
@@ -249,7 +265,7 @@
 
                 await this.fetchEnum();
                 await this.getCampuses();
-                await this.searchLogs();
+                await this.searchLogList();
 
                 const vm = this;
                 $('#entryTime').datepicker({
@@ -257,7 +273,8 @@
                     autoclose: true,
                     todayHighlight: true
                 }).on('changeDate', function (e) {
-                    vm.datas.entryTime = e.format(0, 'yyyy-mm-dd');
+                    vm.entryTime = e.format(0, 'yyyy-mm-dd');
+                    vm.combineEntryTime()
                 });
             },
         });

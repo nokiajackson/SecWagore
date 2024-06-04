@@ -38,7 +38,7 @@
             </div>
         </div>
         <!-- 表格 -->
-        <table class="table-striped border">
+        <table class="table table-striped border mt-2">
             <thead>
                 <tr>
                     <th>姓名</th>
@@ -61,19 +61,47 @@
                     <td>{{ findPurpose(log.purpose) }}</td>
                     <td>{{ log.note }}</td>
                     <td>{{ log.replacementNumber }}</td>
-                    <td>{{ formatDate(log.entryTime) }}</td>
-                    <td>{{ formatDate(log.ExitTime) }}</td>
+                    <td>
+                        <b>{{ formatDate(log.entryTime) }}</b>
+                    </td>
+                    <td>
+                        <b v-if="log.exitTime">
+                            {{ formatDate(log.exitTime) }}
+                        </b>
+                        <a v-else href="javascript:;" class="btn btn-danger text-white"  v-on:click="setExitDate">
+                            紀錄離校時間
+                        </a>
+                        
+                    </td>
                     <td></td>
                 </tr>
             </tbody>
         </table>
     </form>
+    <div class="modal fade" id="setExitDateDiaglog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="setExitDateDiaglogLabel">離校時間</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 
 @section scripts {
     <script>
-
         window.app = new Vue({
             el: '#app',
             data: {
@@ -114,13 +142,16 @@
                 },
                 findPurpose(val) {
                     if (this.enums.purposes.length > 0 && val) {
-                        const vv = this.enums.purposes.find(x => x.key == val);
-                        if (vv) {
-                            return vv.name;
+                        const tt = this.enums.purposes.find(x => x.key == val);
+                        if (tt) {
+                            return tt.name;
                         }
                         return '無';
                     }
                 },
+                setExitDate() {
+                    $('#setExitDateDiaglog').modal('show');
+                }
             },
             async mounted() {
                 // 初始化 entryLogs（如果需要）

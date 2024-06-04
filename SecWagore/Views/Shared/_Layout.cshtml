@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SecWagore</title>
     <link rel="stylesheet" href="~/lib/jquery-ui-1.13.3/jquery-ui.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <environment include="Development">
+        <link rel="stylesheet" href="~/node_modules/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" />
+    </environment>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SecWagore.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
@@ -20,7 +23,6 @@
     <div id="liveToast" role="alert" aria-live="assertive" aria-atomic="true" class="toast hide" data-autohide="false">
         <div class="toast-header">
             <img src="..." class="rounded me-2" alt="...">
-
             <strong class="mr-auto">Message</strong>
             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -30,6 +32,7 @@
             {{toast_msg}}
         </div>
     </div>
+
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2024 - SecWagore - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -49,12 +52,15 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery-ui-1.13.3/jquery-ui.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="~/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap-datepicker.min.js"></script>
+    
+    <script src="~/lib/bootstrap/dist/js/bootstrap-datepicker.min.js"></script> 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
 
     <environment include="Development">
+        <script src="~/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="~/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
         <script src="~/node_modules/axios/dist/axios.js"></script>
         @* <script src="~/node_modules/moment/dist/moment.js"></script> *@
         @*  <script src="~/node_modules/moment/dist/locale/zh-tw.js"></script> *@

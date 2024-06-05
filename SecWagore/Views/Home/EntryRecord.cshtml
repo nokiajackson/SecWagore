@@ -139,14 +139,14 @@
                 //VueNumeric
             },
             watch: {
-                'datas.entryHour': function (newVal) {
+                'entryHour': function (newVal) {
                     if (newVal < 0) {
                         this.entryHour = 0;
                     } else if (newVal > 23) {
                         this.entryHour = 23;
                     }
                 },
-                'datas.entryMin': function (newVal)  {
+                'entryMin': function (newVal)  {
                     if (newVal < 0) {
                         this.entryMin = 0;
                     } else if (newVal > 59) {
@@ -169,9 +169,9 @@
                     
                 },
                 entryLogs: [], // 存放返回的 entryLogs
+                entryTime: null,
                 entryHour: 0,
                 entryMin: 0,
-                entryTime: null,
                 datas:{
                     campusId: null,
                     phoneNumber: null,
@@ -198,6 +198,14 @@
                     this.entryMin = now.minute();
                     this.combineEntryTime(); // 合併時間並更新 datas.entryTime
                 },
+                combineEntryTime() {
+                    if (this.entryTime) {
+                        const combinedTime = `${this.entryTime} ${String(this.entryHour).padStart(2, '0')}:${String(this.entryMin).padStart(2, '0')}:00`;
+                        this.datas.entryTime = moment(combinedTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DDTHH:mm:ss');
+                    } else {
+                        this.datas.entryTime = null;
+                    }
+                },
                 async submitForm() {
                     const tt = JSON.parse(JSON.stringify(this.datas));
 
@@ -223,14 +231,6 @@
                     const res = await axios.get(`${window.appRoot.full}Api/Common/EnumList`);
                     this.enums = res.data;
                 },
-                combineEntryTime() {
-                    if (this.entryTime) {
-                        const combinedTime = `${this.entryTime} ${String(this.entryHour).padStart(2, '0')}:${String(this.entryMin).padStart(2, '0')}:00`;
-                        this.datas.entryTime = moment(combinedTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DDTHH:mm:ss');
-                    } else {
-                        this.datas.entryTime = null;
-                    }
-                },
                 async searchLogList() {
                     const params = this.params;
                     const today = moment().format('YYYY-MM-DD');
@@ -244,6 +244,17 @@
                     // 更新 entryLogs 數據
 
                     this.entryLogs = res.data;
+                },
+                datapickerInit() {
+                    const vm = this;
+                    $('#entryTime').datepicker({
+                        format: 'yyyy-mm-dd',
+                        autoclose: true,
+                        todayHighlight: true
+                    }).on('changeDate', function (e) {
+                        vm.entryTime = e.format(0, 'yyyy-mm-dd');
+                        vm.combineEntryTime()
+                    });
                 },
                 formatDate(date) {
                     return moment(date).format('YYYY-MM-DD HH:mm:ss');
@@ -266,16 +277,8 @@
                 await this.fetchEnum();
                 await this.getCampuses();
                 await this.searchLogList();
+                datapickerInit();
 
-                const vm = this;
-                $('#entryTime').datepicker({
-                    format: 'yyyy-mm-dd',
-                    autoclose: true,
-                    todayHighlight: true
-                }).on('changeDate', function (e) {
-                    vm.entryTime = e.format(0, 'yyyy-mm-dd');
-                    vm.combineEntryTime()
-                });
             },
         });
     </script>

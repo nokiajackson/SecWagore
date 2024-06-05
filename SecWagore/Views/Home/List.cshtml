@@ -17,23 +17,28 @@
             </div>
             <div class="row mb-3">
                 <div class="col-md-3">
+                    <label>進場時間開始</label>
                     <input type="text" id="EntryTimeStart" class="form-control" placeholder="進場時間開始">
                 </div>
                 <div class="col-md-3">
+                    <label>進場時間結束</label>
                     <input type="text" id="EntryTimeEnd" class="form-control" placeholder="進場時間結束">
                 </div>
-            </div>
-            <div class="row mb-3">
                 <div class="col-md-3">
+                    <label>出場時間開始</label>
                     <input type="text" id="ExitTimeStart" class="form-control" placeholder="出場時間開始">
                 </div>
                 <div class="col-md-3">
+                    <label>出場時間結束</label>
                     <input type="text" id="ExitTimeEnd" class="form-control" placeholder="出場時間結束">
                 </div>
             </div>
             <div class="row mb-3">
-                <div class="col-md-3">
-                    <button type="button" class="btn btn-info" @@click="searchLogs">搜索</button>
+                
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12 text-center">
+                    <button type="button" class="btn btn-info text-white" @@click="getEntryList">搜索</button>
                 </div>
             </div>
         </div>
@@ -61,38 +66,49 @@
                     <td>{{ findPurpose(log.purpose) }}</td>
                     <td>{{ log.note }}</td>
                     <td>{{ log.replacementNumber }}</td>
-                    <td>
-                        <b>{{ formatDate(log.entryTime) }}</b>
-                    </td>
+                    <td><b>{{ formatDate(log.entryTime) }}</b></td>
                     <td>
                         <b v-if="log.exitTime">
                             {{ formatDate(log.exitTime) }}
                         </b>
-                        <a v-else href="javascript:;" class="btn btn-danger text-white"  v-on:click="setExitDate">
+                        <a v-else href="javascript:;" class="btn btn-danger text-white" v-on:click="setExitDate(log)">
                             紀錄離校時間
                         </a>
-                        
                     </td>
                     <td></td>
                 </tr>
             </tbody>
         </table>
     </form>
-    <div class="modal fade" id="setExitDateDiaglog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="setExitDateDiaglog" tabindex="-1" aria-labelledby="setExitDateDiaglogLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="setExitDateDiaglogLabel">離校時間</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h1 class="modal-title fs-5" id="setExitDateDiaglogLabel">離校時間</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="entryTime" class="form-label">離校日期</label>
+                            <input type="text" class="form-control" id="entryTime" v-model="entryTime" v-on:change="combineEntryTime">
+                            <button type="button" class="btn btn-sm btn-outline-primary" v-on:click="setCurrentDateTime">帶入現在時間</button>
+                        </div>
+                        <div class="col-4">
+                            <label for="entryTime" class="form-label">離校時間</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control"
+                                       v-model.number="entryHour" v-on:change="combineEntryTime">
+                                <input type="number" class="form-control"
+                                       v-model.number="entryMin" v-on:change="combineEntryTime">
+                            </div>
+                        </div>
+                    </div>
+                    <pre>{{entryLogsItem}}</pre>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" v-on:click="submitForm">Save changes</button>
                 </div>
             </div>
         </div>
@@ -104,6 +120,22 @@
     <script>
         window.app = new Vue({
             el: '#app',
+            watch: {
+                'entryHour': function (newVal) {
+                    if (newVal < 0) {
+                        this.entryHour = 0;
+                    } else if (newVal > 23) {
+                        this.entryHour = 23;
+                    }
+                },
+                'entryMin': function (newVal) {
+                    if (newVal < 0) {
+                        this.entryMin = 0;
+                    } else if (newVal > 59) {
+                        this.entryMin = 59;
+                    }
+                }
+            },
             data: {
                 toast_msg: '',
                 enums: {
@@ -121,6 +153,12 @@
                     // 你的 data 對象
                 },
                 entryLogs: [], // 存放返回的 entryLogs
+                entryLogsItem: {
+                    entryTime: null,
+                },//存檔用
+                entryTime: null,
+                entryHour: 0,
+                entryMin: 0,
                 searchTimeRange: '', // 搜索時間區間
                 searchCategory: '' // 搜索類別
             },
@@ -129,7 +167,7 @@
                     const res = await axios.get(`${window.appRoot.full}Api/Common/EnumList`);
                     this.enums = res.data;
                 },
-                async searchLogs() {
+                async getEntryList() {
                     const params = this.params;
                     // 發送帶有搜索參數的 GET 請求到 API
                     const res = await axios.get(`${window.appRoot.full}Api/Entry/EntryLogList`, { params });
@@ -140,6 +178,36 @@
                 formatDate(date) {
                     return moment(date).format('YYYY-MM-DD \r HH:mm:ss');
                 },
+                setCurrentDateTime() {
+                    const now = moment();
+                    this.entryTime = now.format('YYYY-MM-DD');
+                    this.entryHour = now.hour();
+                    this.entryMin = now.minute();
+                    this.combineEntryTime(); // 合併時間並更新 datas.entryTime
+                },
+                combineEntryTime() {
+                    if (this.entryTime) {
+                        const combinedTime = `${this.entryTime} ${String(this.entryHour).padStart(2, '0')}:${String(this.entryMin).padStart(2, '0')}:00`;
+                        this.entryLogsItem.exitTime = moment(combinedTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DDTHH:mm:ss');
+                    } else {
+                        this.entryLogsItem.submitFormexitTime = null;
+                    }
+                },
+                datapickerInit() {
+                    const vm = this;
+                    this.entryTime= null;
+                    this.entryHour= 0;
+                    this.entryMin= 0;
+
+                    $('#entryTime').datepicker({
+                        format: 'yyyy-mm-dd',
+                        autoclose: true,
+                        todayHighlight: true
+                    }).on('changeDate', function (e) {
+                        vm.entryTime = e.format(0, 'yyyy-mm-dd');
+                        vm.combineEntryTime()
+                    });
+                },
                 findPurpose(val) {
                     if (this.enums.purposes.length > 0 && val) {
                         const tt = this.enums.purposes.find(x => x.key == val);
@@ -149,9 +217,28 @@
                         return '無';
                     }
                 },
-                setExitDate() {
+                setExitDate(item) {
                     $('#setExitDateDiaglog').modal('show');
-                }
+                    //需要洗過資料
+                    this.entryLogsItem = Object.assign({}, item);
+                },
+                async submitForm() {
+                    const tt = JSON.parse(JSON.stringify(this.entryLogsItem));
+
+                    //之後再加入驗證
+                    try {
+                        const response =
+                            await axios.post(`${window.appRoot.full}api/Entry/Save`, tt).then((res) => {
+                                //const { data } = res;
+                                alert('提交成功');
+                                $('#setExitDateDiaglog').modal('hide');
+                            });
+                        this.getEntryList();
+                    } catch (error) {
+                        console.error('提交失敗:', error);
+                        alert('提交失敗');
+                    }
+                },
             },
             async mounted() {
                 // 初始化 entryLogs（如果需要）
@@ -170,8 +257,11 @@
                     this.params.ExitTimeEnd = e.target.value;
                 });
 
-                
-                this.searchLogs();
+                $('#setExitDateDiaglog')[0].addEventListener('show.bs.modal', event => {
+                    // 打開遮罩動作
+                    this.datapickerInit();
+                })
+                this.getEntryList();
             },
         });
     </script>

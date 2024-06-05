@@ -39,8 +39,10 @@ namespace SecWagore.Service
                 Note = model.Note,
                 ReplacementNumber = model.ReplacementNumber,
                 EntryTime = model.EntryTime,
+                ExitTime = model.ExitTime??null,
                 CampusId = model.CampusId,
-                CreateDate = DateTime.Now
+                CreateDate = model.CreateDate ?? DateTime.Now,
+                UpdateDate = DateTime.Now
             });
             //CampusId
 

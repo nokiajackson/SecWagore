@@ -50,6 +50,7 @@ public class EntryController : Controller
             }
             model.UpdateUser = userName;
         }
+
         //院區為0 要打槍
         var result = await _entryLogService.SaveEntryLogAsync(model);
 

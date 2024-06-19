@@ -4,6 +4,9 @@ using SecWagore.Models;
 using System.Data.Entity;
 using SecWagore.Models.ViewModel;
 using System.Security.Claims;
+using SecWagore.Helpers;
+using System.Data.Entity.Infrastructure;
+using static SecWagore.Helpers.ResultHelper;
 
 namespace SecWagore.Service
 {
@@ -26,9 +29,9 @@ namespace SecWagore.Service
             _configuration = configuration;
         }
 
-        public async Task<bool> SaveEntryLogAsync(EntryLogVM model)
+        public async Task<Result<string>> SaveEntryLogAsync(EntryLogVM model)
         {
-            var vm = _context.EntryLogs.Add( new EntryLog
+            var vm = _context.EntryLogs.Add(new EntryLog
             {
                 PhoneNumber = model.PhoneNumber,
                 FullName = model.FullName,
@@ -39,7 +42,7 @@ namespace SecWagore.Service
                 Note = model.Note,
                 ReplacementNumber = model.ReplacementNumber,
                 EntryTime = model.EntryTime,
-                ExitTime = model.ExitTime??null,
+                ExitTime = model.ExitTime ?? null,
                 CampusId = model.CampusId,
                 CreateDate = model.CreateDate ?? DateTime.Now,
                 UpdateDate = DateTime.Now
@@ -48,6 +51,33 @@ namespace SecWagore.Service
 
             var result = _context.SaveChanges();
             return result > 0;
+        }
+        public async Task<Result<EntryLogVM>> UpateEntryLogAsync(EntryLogVM model)
+        {
+            if (!_context.EntryLogs.AsQueryable()
+                    .Any(r => r.Id == model.Id))
+            {
+                return ResultHelper.Failure<string>("找不到指定的資料!");
+            }
+
+            using (var trans = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var entryLogs = await _context.EntryLogs
+                                    .Where(r => r.Id == model.Id).FirstOrDefaultAsync();
+
+                    entryLogs.UpdateDate = DateTime.Now;
+                    entryLogs.ExitTime = model.ExitTime;
+
+                    var result = _context.SaveChanges();
+                    return ResultHelper.Success<string>(string.Empty, StatusCode.Get);
+                }
+                catch (Exception ex)
+                {
+                    return ResultHelper.Failure<string>("異動資料失敗！！" + ex.Message);
+                }
+            }
         }
 
         public List<EntryLogVM> GetEntryLogsList(SearchEntryLogVM vm)
@@ -64,7 +94,7 @@ namespace SecWagore.Service
                 query = query.Where(el => el.FullName.Contains(vm.FullName));
             }
 
-            if (vm.Purpose.HasValue && vm.Purpose.Value!=0)
+            if (vm.Purpose.HasValue && vm.Purpose.Value != 0)
             {
                 query = query.Where(el => el.Purpose == (byte)vm.Purpose.Value);
 
@@ -97,6 +127,7 @@ namespace SecWagore.Service
             var result = query
                 .Select(x => new EntryLogVM
                 {
+                    Id = x.Id,
                     PhoneNumber = x.PhoneNumber,
                     FullName = x.FullName,
                     NumberOfPeople = x.NumberOfPeople ?? 0,

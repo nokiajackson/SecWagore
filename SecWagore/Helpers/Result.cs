@@ -9,84 +9,60 @@ namespace SecWagore.Helpers
     {
 
         /// <summary> Constructor Success=false </summary>
-        public Result()
-            : this(false)
-        {
-        }
+        public Result() : this(false) { }
+
 
         /// <summary> Constructor </summary>
         /// <param name="success"> success </param>
         public Result(bool success)
         {
             //ID = Guid.NewGuid();
-            ID = 0;
+            ID = Guid.NewGuid(); // Changed to Guid
             Success = success;
             Data = null;
             Total = 0;
             ErrorCode = 0;
+            VaildationData = new List<VaildationResult>();
+            Message = string.Empty;
+            ExceptionMessage = string.Empty; // Changed from ExMessage
         }
 
         /// <summary> Constructor with error message. </summary>
         /// <param name="message"> Error Message </param>
         public Result(string message)
         {
-            //ID = Guid.NewGuid();
-            ID = 0;
-            Success = false;
             Message = message;
         }
 
 
 
         /// <summary> 操作的資料 </summary>
-        public T Data
-        {
-            get;
-            set;
-        }
-
+        public T Data { get; set; }
         public int Total { get; set; }
 
         /// <summary> 驗證的資料 </summary>
-        public List<VaildationResult> VaildationData
-        {
-            get;
-            set;
-        }
+        public List<VaildationResult> VaildationData { get; set; }
 
-        /// <summary> 錯誤代碼 </summary>
+        /// <summary> Error code </summary>
         public int ErrorCode { get; set; }
 
-        #region IResult 成員
+        #region IResult Members
 
-        /// <summary> 唯一編碼 </summary>
-        public dynamic ID
-        {
-            get;
-            set;
-            //private set;
-        }
+        /// <summary> Unique identifier </summary>
+        public Guid ID { get; set; } // Changed from dynamic
 
-        /// <summary> 操作失敗訊息 </summary>
-        public string Message
-        {
-            get;
-            set;
-        }
+        /// <summary> Operation message </summary>
+        public string Message { get; set; }
 
-        /// <summary> 操作例外訊息 </summary>
-        public string ExMessage
-        {
-            get;
-            set;
-        }
+        /// <summary> Exception message </summary>
+        public string ExceptionMessage { get; set; } // Changed from ExMessage
 
-        /// <summary> 操作狀態 </summary>
-        public bool Success
-        {
-            get;
-            set;
-        }
+        /// <summary> Operation success status </summary>
+        public bool Success { get; set; }
+
+        dynamic IResult<T>.ID => throw new NotImplementedException();
+
+        #endregion
 
         public override bool Equals(object obj)
         {
@@ -103,7 +79,6 @@ namespace SecWagore.Helpers
             return base.ToString();
         }
 
-        #endregion IResult 成員
     }
     /// <summary> 驗證資訊 </summary>
     public class VaildationResult

@@ -10,14 +10,14 @@ namespace SecWagore.Helpers
         /// <param name="data"> 回傳的資料 </param>
         /// <param name="code"> 操作動作 </param>
         /// <returns> </returns>
-        public static Result<T> Success<T>(T data, StatusCode code, int total=0) where T : class
+        public static Result<T> Success<T>(T data, StatusCode code, string message = "Success", int total = 0) where T : class
         {
             return new Result<T>(true)
             {
                 Data = data,
                 Total = total,
                 Message = GetMessage(true, code),
-                ExMessage = string.Empty
+                ErrorCode = 0 // 默认成功时没有错误码
             };
         }
 
@@ -26,16 +26,15 @@ namespace SecWagore.Helpers
         /// <param name="exMessage"> 例外訊息 </param>
         /// <param name="code"> 操作動作 </param>
         /// <returns> </returns>
-        public static Result<T> Failure<T>(string exMessage, StatusCode code) where T : class
+        public static Result<T> Failure<T>(string message, StatusCode code, int errorCode = 500) where T : class
         {
             return new Result<T>(false)
             {
                 Message = GetMessage(false, code),
-                ExMessage = exMessage,
-                VaildationData = new List<VaildationResult>()
+                ErrorCode = errorCode
+                //VaildationData = new List<VaildationResult>()
             };
         }
-
 
         #region 操作動作回傳訊息控制
 
@@ -79,53 +78,20 @@ namespace SecWagore.Helpers
         /// <returns> 訊息 </returns>
         private static string GetMessage(bool isSuccess, StatusCode code)
         {
-            string message = string.Empty;
-            switch (code)
+            return code switch
             {
-                case StatusCode.Save:
-                    message = isSuccess ? "儲存成功" : "儲存失敗";
-                    break;
-
-                case StatusCode.Delete:
-                    message = isSuccess ? "刪除成功" : "刪除失敗";
-                    break;
-
-                case StatusCode.Validation:
-                    message = isSuccess ? "驗證成功" : "驗證失敗";
-                    break;
-
-                case StatusCode.Import:
-                    message = isSuccess ? "匯入成功" : "匯入失敗";
-                    break;
-
-                case StatusCode.Export:
-                    message = isSuccess ? "匯出成功" : "匯出失敗";
-                    break;
-
-                case StatusCode.Send:
-                    message = isSuccess ? "發送成功" : "發送失敗";
-                    break;
-
-                case StatusCode         .BackUp:
-                    message = isSuccess ? "備份成功" : "備份失敗";
-                    break;
-
-                case StatusCode.Compare:
-                    message = isSuccess ? "比對成功" : "比對失敗";
-                    break;
-
-                case StatusCode.Get:
-                    message = isSuccess ? "資料取得成功" : "資料取得失敗";
-                    break;
-
-                case StatusCode.Apply:
-                    message = isSuccess ? "申請成功" : "申請失敗";
-                    break;
-
-                default:
-                    break;
-            }
-            return message;
+                StatusCode.Save => isSuccess ? "儲存成功" : "儲存失敗",
+                StatusCode.Delete => isSuccess ? "刪除成功" : "刪除失敗",
+                StatusCode.Validation => isSuccess ? "驗證成功" : "驗證失敗",
+                StatusCode.Import => isSuccess ? "匯入成功" : "匯入失敗",
+                StatusCode.Export => isSuccess ? "匯出成功" : "匯出失敗",
+                StatusCode.Send => isSuccess ? "發送成功" : "發送失敗",
+                StatusCode.BackUp => isSuccess ? "備份成功" : "備份失敗",
+                StatusCode.Compare => isSuccess ? "比對成功" : "比對失敗",
+                StatusCode.Get => isSuccess ? "資料取得成功" : "資料取得失敗",
+                StatusCode.Apply => isSuccess ? "申請成功" : "申請失敗",
+                _ => string.Empty,
+            };
         }
 
         #endregion 操作動作回傳訊息控制

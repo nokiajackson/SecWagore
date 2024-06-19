@@ -64,6 +64,26 @@ public class EntryController : Controller
         }
     }
 
+    [HttpPost("Upate")]
+    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    [HttpPost]
+    public async Task<> UpdateEntryLog([FromBody] EntryLogVM model)
+    {
+        if (model == null)
+        {
+           // return BadRequest("Invalid entry log data.");
+        }
+
+        var userName = User.FindFirst(ClaimTypes.Name)?.Value; //使用者更新
+
+        if (userName != null)
+        {
+            model.UpdateUser = userName;
+        }
+
+        var result = await _entryLogService.UpateEntryLogAsync(model);
+        return result;
+    }
     /// <summary>
     /// Get all campuses.
     /// </summary>

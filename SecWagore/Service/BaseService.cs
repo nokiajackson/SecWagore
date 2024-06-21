@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using SecWagore.Models;
+using System.Data.Entity.Infrastructure;
 
 namespace SecWagore.Service
 {
-    public  class BaseService<T> : IDisposable where T : class
+    public abstract class BaseService<T> : IDisposable where T : class
     {
 
         /// <summary>
@@ -28,7 +29,8 @@ namespace SecWagore.Service
         /// <param name="dbModel"></param>
         protected BaseService(SecDbContext dbModel)
         {
-            _context = dbModel ?? throw new ArgumentNullException(nameof(dbModel));
+            //_context = dbModel ?? throw new ArgumentNullException(nameof(dbModel));
+            _context = dbModel;
             EntitySet = dbModel.Set<T>();
         }
 
@@ -73,7 +75,7 @@ namespace SecWagore.Service
             {
                 throw new ArgumentNullException(nameof(instance));
             }
-            _context.Entry(instance).State = EntityState.Modified;
+            //_context.Entry(instance).State = EntityState.Modified;
             return SaveChanges();
         }
 
@@ -96,7 +98,7 @@ namespace SecWagore.Service
 
         //    try
         //    {
-        //        return DbModel.SaveChanges();
+        //        return _context.SaveChanges();
         //    }
         //    catch (Exception ex)
         //    {

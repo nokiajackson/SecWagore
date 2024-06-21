@@ -1,12 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Data.Entity;
 using Microsoft.EntityFrameworkCore;
 using SecWagore.Models;
-using System.Data.Entity;
 using SecWagore.Models.ViewModel;
 using System.Security.Claims;
 using SecWagore.Helpers;
 using System.Data.Entity.Infrastructure;
 using static SecWagore.Helpers.ResultHelper;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+
 
 namespace SecWagore.Service
 {
@@ -16,84 +19,88 @@ namespace SecWagore.Service
     public class EntryLogService : BaseService<EntryLog>
     {
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// 建構子
         /// </summary>
         /// <param name="dbModel"></param>
         /// <param name="configuration"></param>
-        /// <param name="userManageService"></param>
+        /// <param name="mapper"></param>
         public EntryLogService(SecDbContext dbModel,
-            IConfiguration configuration) : base(dbModel)
+            IConfiguration configuration,
+            IMapper mapper) : base(dbModel)
         {
             _configuration = configuration;
+            _mapper = mapper;
         }
+
 
         public async Task<Result<EntryLogVM>> SaveEntryLogAsync(EntryLogVM model)
         {
             try
             {
-                var vm = _context.EntryLogs.Add(new EntryLog
-                {
-                    PhoneNumber = model.PhoneNumber,
-                    FullName = model.FullName,
-                    NumberOfPeople = model.NumberOfPeople,
-                    Interviewee = model.Interviewee,
-                    Purpose = (byte)model.Purpose,
-                    OtherDescription = model.OtherDescription,
-                    Note = model.Note,
-                    ReplacementNumber = model.ReplacementNumber,
-                    EntryTime = model.EntryTime,
-                    ExitTime = model.ExitTime ?? null,
-                    CampusId = model.CampusId,
-                    CreateDate = model.CreateDate ?? DateTime.Now,
-                    UpdateDate = DateTime.Now
-                });
-                //CampusId
+                // 使用 AutoMapper 將 EntryLogVM 映射到 EntryLog
+                var entryLog = _mapper.Map<EntryLog>(model);
+                entryLog.CreateDate = DateTime.Now;
+                entryLog.UpdateDate = DateTime.Now;
 
-                var result = _context.SaveChanges();
-                return ResultHelper.Success<EntryLogVM>(model, ResultHelper.StatusCode.Get);
+                _context.EntryLogs.Add(entryLog);
+
+                var result = await _context.SaveChangesAsync();
+                return ResultHelper.Success<EntryLogVM>(model, ResultHelper.StatusCode.Save);
             }
             catch (Exception ex)
             {
-                return ResultHelper.Failure<EntryLogVM>("異動資料失敗！！" + ex.Message, ResultHelper.StatusCode.Get);
+                return ResultHelper.Failure<EntryLogVM>("異動資料失敗！！" + ex.Message, ResultHelper.StatusCode.Save);
             }
-            
         }
+
+
         public async Task<Result<EntryLogVM>> UpateEntryLogAsync(EntryLogVM model)
         {
             if (model.Id == 0)
             {
                 return await SaveEntryLogAsync(model);
-            }else if (model.Id > 0)
+            }
+            else if (model.Id > 0)
             {
-                if (!_context.EntryLogs.AsQueryable()
-                   .Any(r => r.Id == model.Id))
+                var rr = _context.EntryLogs.Any(r => r.Id == model.Id);
+                if (!rr)
                 {
-                    return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Get);
+                    return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
                 }
             }
-           
 
-            using (var trans = _context.Database.BeginTransaction())
+            using (var trans = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var entryLogs = await _context.EntryLogs
-                                    .Where(r => r.Id == model.Id).FirstOrDefaultAsync();
+                    var entryLog = await _context.EntryLogs.Where(r => r.Id == model.Id).FirstOrDefaultAsync();
 
-                    entryLogs.UpdateDate = DateTime.Now;
-                    entryLogs.ExitTime = model.ExitTime;
+                    if (entryLog != null)
+                    {
+                        entryLog.UpdateDate = DateTime.Now;
+                        entryLog.ExitTime = model.ExitTime;
 
-                    var result = _context.SaveChanges();
-                    return ResultHelper.Success<EntryLogVM>(model, ResultHelper.StatusCode.Get);
+                        await _context.SaveChangesAsync();
+                        await trans.CommitAsync();
+
+                        return ResultHelper.Success<EntryLogVM>(model, ResultHelper.StatusCode.Get);
+                    }
+                    else
+                    {
+                        return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
+                    }
                 }
                 catch (Exception ex)
                 {
+                    await trans.RollbackAsync();
                     return ResultHelper.Failure<EntryLogVM>("異動資料失敗！！" + ex.Message, ResultHelper.StatusCode.Get);
                 }
             }
         }
+
 
         public List<EntryLogVM> GetEntryLogsList(SearchEntryLogVM vm)
         {
@@ -140,21 +147,8 @@ namespace SecWagore.Service
 
 
             var result = query
-                .Select(x => new EntryLogVM
-                {
-                    Id = x.Id,
-                    PhoneNumber = x.PhoneNumber,
-                    FullName = x.FullName,
-                    NumberOfPeople = x.NumberOfPeople ?? 0,
-                    Interviewee = x.Interviewee,
-                    Purpose = (Purpose)x.Purpose,
-                    OtherDescription = x.OtherDescription,
-                    Note = x.Note,
-                    ReplacementNumber = x.ReplacementNumber,
-                    EntryTime = x.EntryTime,
-                    ExitTime = x.ExitTime
-                })
-                .ToList();
+                        .ProjectTo<EntryLogVM>(_mapper.ConfigurationProvider)
+                        .ToList();
 
             return result;
 

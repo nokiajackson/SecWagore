@@ -11,6 +11,9 @@ try {
     builder.Services.AddControllersWithViews();
     builder.Services.AddControllers();
 
+    // °t¸m AutoMapper
+    builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(options => {
 

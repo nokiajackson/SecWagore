@@ -61,7 +61,8 @@ public class EntryController : Controller
     {
         if (model == null)
         {
-           // return BadRequest("Invalid entry log data.");
+            // return BadRequest("Invalid entry log data.");
+            return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
         }
 
         var userName = User.FindFirst(ClaimTypes.Name)?.Value;
@@ -81,7 +82,22 @@ public class EntryController : Controller
         var result = await _entryLogService.UpateEntryLogAsync(model);
         return result;
     }
-    
+
+    [HttpPost("UpdateExitDate")]
+    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    [HttpPost]
+    public async Task<Result<EntryLogVM>> UpdateExitDate([FromBody] EntryLogVM model)
+    {
+        if (model == null || model.Id==0)
+        {
+            return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
+        }
+
+        model.ExitTime = DateTime.Now;
+        var result = await _entryLogService.UpateEntryLogAsync(model);
+        return result;
+    }
+
 
     /// <summary>
     /// Get all campuses.

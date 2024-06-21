@@ -28,15 +28,12 @@ public class EntryController : Controller
 
     }
 
+    
     [HttpPost("Save")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
     [HttpPost]
-    public async Task<IActionResult> SaveEntryLog([FromBody] EntryLogVM model)
+    public async Task<Result<EntryLogVM>> SaveEntryLog([FromBody] EntryLogVM model)
     {
-        if (model == null)
-        {
-            return BadRequest("Invalid entry log data.");
-        }
 
         var userName = User.FindFirst(ClaimTypes.Name)?.Value;
         var campusId = User.FindFirst("CampusId");
@@ -54,36 +51,38 @@ public class EntryController : Controller
         //院區為0 要打槍
         var result = await _entryLogService.SaveEntryLogAsync(model);
 
-        if (result)
-        {
-            return Ok("Entry log saved successfully.");
-        }
-        else
-        {
-            return StatusCode(500, "An error occurred while saving the entry log.");
-        }
+        return result;
     }
 
-    [HttpPost("Upate")]
+    [HttpPost("Update")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
     [HttpPost]
-    public async Task<> UpdateEntryLog([FromBody] EntryLogVM model)
+    public async Task<Result<EntryLogVM>> UpdateEntryLog([FromBody] EntryLogVM model)
     {
         if (model == null)
         {
            // return BadRequest("Invalid entry log data.");
         }
 
-        var userName = User.FindFirst(ClaimTypes.Name)?.Value; //使用者更新
+        var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+        var campusId = User.FindFirst("CampusId");
 
-        if (userName != null)
+        if (campusId != null && userName != null)
         {
+            int _campusId;
+            if (int.TryParse(campusId.Value, out _campusId)&& model.Id==0)
+            {
+                //新增要掛校區
+                model.CampusId = _campusId;
+            }
             model.UpdateUser = userName;
         }
 
         var result = await _entryLogService.UpateEntryLogAsync(model);
         return result;
     }
+    
+
     /// <summary>
     /// Get all campuses.
     /// </summary>
@@ -123,6 +122,5 @@ public class EntryController : Controller
         _accountService.CreateUser(account);
         return Task.FromResult<IActionResult>(Ok("Account created successfully."));
     }
-
 
 }

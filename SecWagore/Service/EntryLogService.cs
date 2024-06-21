@@ -29,36 +29,51 @@ namespace SecWagore.Service
             _configuration = configuration;
         }
 
-        public async Task<Result<string>> SaveEntryLogAsync(EntryLogVM model)
+        public async Task<Result<EntryLogVM>> SaveEntryLogAsync(EntryLogVM model)
         {
-            var vm = _context.EntryLogs.Add(new EntryLog
+            try
             {
-                PhoneNumber = model.PhoneNumber,
-                FullName = model.FullName,
-                NumberOfPeople = model.NumberOfPeople,
-                Interviewee = model.Interviewee,
-                Purpose = (byte)model.Purpose,
-                OtherDescription = model.OtherDescription,
-                Note = model.Note,
-                ReplacementNumber = model.ReplacementNumber,
-                EntryTime = model.EntryTime,
-                ExitTime = model.ExitTime ?? null,
-                CampusId = model.CampusId,
-                CreateDate = model.CreateDate ?? DateTime.Now,
-                UpdateDate = DateTime.Now
-            });
-            //CampusId
+                var vm = _context.EntryLogs.Add(new EntryLog
+                {
+                    PhoneNumber = model.PhoneNumber,
+                    FullName = model.FullName,
+                    NumberOfPeople = model.NumberOfPeople,
+                    Interviewee = model.Interviewee,
+                    Purpose = (byte)model.Purpose,
+                    OtherDescription = model.OtherDescription,
+                    Note = model.Note,
+                    ReplacementNumber = model.ReplacementNumber,
+                    EntryTime = model.EntryTime,
+                    ExitTime = model.ExitTime ?? null,
+                    CampusId = model.CampusId,
+                    CreateDate = model.CreateDate ?? DateTime.Now,
+                    UpdateDate = DateTime.Now
+                });
+                //CampusId
 
-            var result = _context.SaveChanges();
-            return result > 0;
+                var result = _context.SaveChanges();
+                return ResultHelper.Success<EntryLogVM>(model, ResultHelper.StatusCode.Get);
+            }
+            catch (Exception ex)
+            {
+                return ResultHelper.Failure<EntryLogVM>("異動資料失敗！！" + ex.Message, ResultHelper.StatusCode.Get);
+            }
+            
         }
         public async Task<Result<EntryLogVM>> UpateEntryLogAsync(EntryLogVM model)
         {
-            if (!_context.EntryLogs.AsQueryable()
-                    .Any(r => r.Id == model.Id))
+            if (model.Id == 0)
             {
-                return ResultHelper.Failure<string>("找不到指定的資料!");
+                return await SaveEntryLogAsync(model);
+            }else if (model.Id > 0)
+            {
+                if (!_context.EntryLogs.AsQueryable()
+                   .Any(r => r.Id == model.Id))
+                {
+                    return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Get);
+                }
             }
+           
 
             using (var trans = _context.Database.BeginTransaction())
             {
@@ -71,11 +86,11 @@ namespace SecWagore.Service
                     entryLogs.ExitTime = model.ExitTime;
 
                     var result = _context.SaveChanges();
-                    return ResultHelper.Success<string>(string.Empty, StatusCode.Get);
+                    return ResultHelper.Success<EntryLogVM>(model, ResultHelper.StatusCode.Get);
                 }
                 catch (Exception ex)
                 {
-                    return ResultHelper.Failure<string>("異動資料失敗！！" + ex.Message);
+                    return ResultHelper.Failure<EntryLogVM>("異動資料失敗！！" + ex.Message, ResultHelper.StatusCode.Get);
                 }
             }
         }

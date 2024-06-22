@@ -7,17 +7,21 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 try {
-    // Add services to the container.
-    builder.Services.AddControllersWithViews();
-    builder.Services.AddControllers();
 
     // 配置 AutoMapper
     builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+    builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+    // Add services to the container.
+    builder.Services.AddControllersWithViews();
+    builder.Services.AddControllers();
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(options => {
 
     });
+
+
 
     builder.Services.AddMvc();
     builder.Services.AddHttpContextAccessor();
@@ -26,6 +30,10 @@ try {
     var connectionString = configuration.GetConnectionString("SecWagoreContext");
     builder.Services.AddDbContext<SecDbContext>(options =>
         options.UseSqlServer(connectionString));
+
+    //builder.Services.AddDbContext<SecDbContext>(options =>
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("SecWagoreContext")));
+
 
     // 服務要註冊在這裡
     //builder.Services.AddScoped<BaseService<EntryLog>>();

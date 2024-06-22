@@ -18,7 +18,7 @@ namespace SecWagore.Models.ViewModel
 
         public string? Note { get; set; } = null;
         //換證號碼
-        public string ReplacementNumber { get; set; }
+        public string? ReplacementNumber { get; set; } = null;
         /// <summary>
         /// 入校時間
         /// </summary>

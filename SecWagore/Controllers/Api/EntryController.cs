@@ -89,13 +89,9 @@ public class EntryController : Controller
     public async Task<Result<EntryLogVM>> UpdateExitDate([FromBody] EntryLogVM model)
     {
         if (model == null || model.Id==0)
-        {
             return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
-        }
 
-        model.ExitTime = DateTime.Now;
-        var result = await _entryLogService.UpateEntryLogAsync(model);
-        return result;
+        return await _entryLogService.UpateEntryLogAsync(model);
     }
 
 

@@ -228,7 +228,7 @@
                     //之後再加入驗證
                     try {
                         const response =
-                            await axios.post(`${window.appRoot.full}api/Entry/Save`, tt).then((res) => {
+                            await axios.post(`${window.appRoot.full}api/Entry/UpdateExitDate`, tt).then((res) => {
                                 //const { data } = res;
                                 alert('提交成功');
                                 $('#setExitDateDiaglog').modal('hide');

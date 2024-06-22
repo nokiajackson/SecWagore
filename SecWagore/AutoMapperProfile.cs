@@ -8,8 +8,8 @@ public class AutoMapperProfile : Profile
     public AutoMapperProfile()
     {
         CreateMap<EntryLog, EntryLogVM>()
-            .ForMember(dest => dest.Purpose, opt => opt.MapFrom(src => (Purpose)src.Purpose));
-        CreateMap<EntryLogVM, EntryLog>()
+            .ForMember(dest => dest.Purpose, opt => opt.MapFrom(src => (Purpose)src.Purpose))
+            .ReverseMap()
             .ForMember(dest => dest.Purpose, opt => opt.MapFrom(src => (byte)src.Purpose));
     }
 }

@@ -5,7 +5,7 @@ using System.Data.Entity.Infrastructure;
 
 namespace SecWagore.Service
 {
-    public abstract class BaseService<T> : IDisposable where T : class
+    public class BaseService<T> : IDisposable where T : class
     {
 
         /// <summary>

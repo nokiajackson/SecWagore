@@ -31,7 +31,6 @@ public class EntryController : Controller
     
     [HttpPost("Save")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    [HttpPost]
     public async Task<Result<EntryLogVM>> SaveEntryLog([FromBody] EntryLogVM model)
     {
 
@@ -56,7 +55,6 @@ public class EntryController : Controller
 
     [HttpPost("Update")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    [HttpPost]
     public async Task<Result<EntryLogVM>> UpdateEntryLog([FromBody] EntryLogVM model)
     {
         if (model == null)
@@ -85,10 +83,9 @@ public class EntryController : Controller
 
     [HttpPost("UpdateExitDate")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    [HttpPost]
     public async Task<Result<EntryLogVM>> UpdateExitDate([FromBody] EntryLogVM model)
     {
-        if (model == null || model.Id==0)
+        if (model == null || model.Id == 0)
             return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
 
         return await _entryLogService.UpateEntryLogAsync(model);

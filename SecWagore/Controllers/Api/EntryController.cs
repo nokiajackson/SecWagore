@@ -30,8 +30,9 @@ public class EntryController : Controller
 
     
     [HttpPost("Save")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    [HttpPost]
+    [SwaggerOperation(Summary = "Save entry log", Description = "Saves a new entry log.")]
+    [SwaggerResponse(200, "Entry log saved successfully.", typeof(Result<EntryLogVM>))]
+    [SwaggerResponse(400, "Invalid input data.")]
     public async Task<Result<EntryLogVM>> SaveEntryLog([FromBody] EntryLogVM model)
     {
 
@@ -54,9 +55,10 @@ public class EntryController : Controller
         return result;
     }
 
-    [HttpPost("Update")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    [HttpPost]
+    [HttpPut("Update")]
+    [SwaggerOperation(Summary = "Update entry log", Description = "Updates an existing entry log.")]
+    [SwaggerResponse(200, "Entry log updated successfully.", typeof(Result<EntryLogVM>))]
+    [SwaggerResponse(400, "Invalid input data.")]
     public async Task<Result<EntryLogVM>> UpdateEntryLog([FromBody] EntryLogVM model)
     {
         if (model == null)
@@ -83,9 +85,10 @@ public class EntryController : Controller
         return result;
     }
 
-    [HttpPost("UpdateExitDate")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    [HttpPost]
+    [HttpPatch("UpdateExitDate")]
+    [SwaggerOperation(Summary = "Update exit date", Description = "Updates the exit date of an existing entry log.")]
+    [SwaggerResponse(200, "Exit date updated successfully.", typeof(Result<EntryLogVM>))]
+    [SwaggerResponse(400, "Invalid input data.")]
     public async Task<Result<EntryLogVM>> UpdateExitDate([FromBody] EntryLogVM model)
     {
         if (model == null || model.Id==0)
@@ -108,7 +111,9 @@ public class EntryController : Controller
     //}
 
     [HttpGet("EntryLogList")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    [SwaggerOperation(Summary = "Get entry log list", Description = "Retrieves a list of entry logs based on search criteria.")]
+    [SwaggerResponse(200, "Entry logs retrieved successfully.", typeof(List<EntryLog>))]
+    [SwaggerResponse(400, "Invalid search criteria.")]
     public ActionResult<List<EntryLog>> EntryLogList([FromQuery] SearchEntryLogVM vm)
     {
         var campusIdClaim = User.FindFirst("CampusId");
@@ -128,7 +133,9 @@ public class EntryController : Controller
     }
 
     [HttpPost("CreateUser")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    [SwaggerOperation(Summary = "Create user", Description = "Creates a new user account.")]
+    [SwaggerResponse(200, "Account created successfully.")]
+    [SwaggerResponse(400, "Invalid account data.")]
     public Task<IActionResult> CreateUser(Account account)
     {
         _accountService.CreateUser(account);

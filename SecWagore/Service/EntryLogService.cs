@@ -76,24 +76,26 @@ namespace SecWagore.Service
             {
                 try
                 {
-                    EntryLog entryLog = _context.EntryLogs.Where(r => r.Id == model.Id && r.CampusId == model.CampusId).FirstOrDefault();
-                    //var entryLog = _context.EntryLogs.Find(model.Id);
+                    var entryLog = _context.EntryLogs
+                    .Where(r => r.Id == model.Id)
+                    .FirstOrDefault();
 
-                    if (entryLog == null)
+                    if (entryLog != null)
                     {
-                        entryLog = new EntryLog
-                        {
-                            Purpose = (Byte)model.Purpose,
-                        };
-                    }
-                    _mapper.Map(model, entryLog);
-                    entryLog.UpdateDate = DateTime.Now;
-                    entryLog.ExitTime = DateTime.Now;
+                        _mapper.Map(model, entryLog);
+                        entryLog.UpdateDate = DateTime.Now;
+                        entryLog.ExitTime = DateTime.Now;
 
-                    await _context.SaveChangesAsync();
-                    await trans.CommitAsync();
-                    var updatedModel = _mapper.Map<EntryLogVM>(entryLog);
-                    return ResultHelper.Success<EntryLogVM>(updatedModel, ResultHelper.StatusCode.Get);
+                        await _context.SaveChangesAsync();
+                        await trans.CommitAsync();
+
+                        var updatedModel = _mapper.Map<EntryLogVM>(entryLog);
+                        return ResultHelper.Success<EntryLogVM>(updatedModel, ResultHelper.StatusCode.Get);
+                    }
+                    else
+                    {
+                        return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
+                    }
 
                 }
                 catch (Exception ex)

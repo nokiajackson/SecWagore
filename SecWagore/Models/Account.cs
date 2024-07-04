@@ -39,6 +39,10 @@ namespace SecWagore.Models
         /// 更新人員
         /// </summary>
         public string? UpdateUser { get; set; }
+        /// <summary>
+        /// 身分:一般:1,警衛:2,admin:9
+        /// </summary>
+        public int Ide { get; set; }
 
         public virtual Campus? Campus { get; set; }
     }

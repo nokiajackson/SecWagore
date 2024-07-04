@@ -166,7 +166,7 @@
                 entryHour: 0,
                 entryMin: 0,
                 datas:{
-                    campusId: null,
+                    campusId: 0,
                     phoneNumber: null,
                     fullName: '',
                     numberOfPeople: 0,
@@ -201,10 +201,11 @@
                 },
                 async submitForm() {
                     const tt = JSON.parse(JSON.stringify(this.datas));
+                    console.log(JSON.stringify(this.datas))
                     //之後再加入驗證
                     try {
                         const response =
-                            await axios.post(`${window.appRoot.full}api/Entry/Update`, tt).then((res) => {
+                            await axios.post(`${window.appRoot.full}Api/Entry/Update`, tt).then((res) => {
                                 //const { data } = res;
                                 alert('提交成功');
                             });
@@ -218,6 +219,7 @@
                     //this.datas
                     const tt = JSON.parse(JSON.stringify(_data));
                     //之後再加入驗證
+                    console.log(tt)
                     try {
                         const response =
                             await axios.post(`${window.appRoot.full}api/Entry/UpdateExitDate`, tt).then((res) => {
@@ -285,8 +287,10 @@
 
                 await this.fetchEnum();
                 await this.getCampuses();
-                await this.searchLogList();
                 await this.datapickerInit();
+                if (this.userIsAuthenticated) {
+                    await this.searchLogList();
+                }
 
             },
         });

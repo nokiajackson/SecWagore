@@ -76,9 +76,11 @@ namespace SecWagore.Service
             {
                 try
                 {
-                    var entryLog = _context.EntryLogs
-                        .Where(r => r.Id == model.Id)
-                        .FirstOrDefault();
+                    var entryLog = await _context.EntryLogs.FindAsync(model.Id);
+
+                    //var entryLog = _context.EntryLogs
+                    //    .Where(r => r.Id == model.Id)
+                    //    .FirstOrDefault();
 
                     if (entryLog != null)
                     {

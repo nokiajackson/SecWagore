@@ -2,7 +2,7 @@
 
 namespace SecWagore
 {
-    public enum Purpose : byte
+    public enum Purpose 
     {
         洽公 = 1,
         送貨 = 2,

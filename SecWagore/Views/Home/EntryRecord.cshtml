@@ -165,19 +165,27 @@
                 entryTime: null,
                 entryHour: 0,
                 entryMin: 0,
-                datas:{
+                datas: {
+                    id: 0,
                     campusId: 0,
-                    phoneNumber: null,
+                    phoneNumber: '',
                     fullName: '',
                     numberOfPeople: 0,
                     interviewee: '',//受訪人
-                    purpose: '',
+                    purpose: 0,
                     otherDescription: '',
                     note: '',
                     replacementNumber: '',
                     entryTime: null,
-                    exitDate: null,
-               }
+                    exitTime: null,
+
+
+               },
+                dd: {
+                    id: 0, "campusId": 0, "phoneNumber": "2", "fullName": "a", "numberOfPeople": 3, "interviewee": "2",
+                "purpose": 2, "otherDescription": "", "note": "2", "replacementNumber": "2", 
+                "entryTime": "2024-07-09T07:50:00", "exitTime": null }
+
             },
             methods: {
                 toastMsg(msg) {
@@ -201,7 +209,7 @@
                 },
                 async submitForm() {
                     const tt = JSON.parse(JSON.stringify(this.datas));
-                    console.log(JSON.stringify(this.datas))
+                    console.log(`${window.appRoot.full}Api/Entry/Update`,JSON.stringify(this.datas))
                     //之後再加入驗證
                     try {
                         const response =
@@ -219,10 +227,10 @@
                     //this.datas
                     const tt = JSON.parse(JSON.stringify(_data));
                     //之後再加入驗證
-                    console.log(tt)
+                    console.log(`${window.appRoot.full}Api/Entry/UpdateExitDate`,tt)
                     try {
                         const response =
-                            await axios.post(`${window.appRoot.full}api/Entry/UpdateExitDate`, tt).then((res) => {
+                            await axios.post(`${window.appRoot.full}Api/Entry/UpdateExitDate`, tt).then((res) => {
                                 const { data } = res;
                                 console.log(data)
                                 alert('提交成功');

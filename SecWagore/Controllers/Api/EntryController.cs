@@ -53,7 +53,7 @@ public class EntryController : Controller
         return result;
     }
 
-    [HttpPut("Update")]
+    [HttpPost("Update")]
     [SwaggerResponse(200, "Entry log updated successfully.", typeof(Result<EntryLogVM>))]
     public async Task<Result<EntryLogVM>> UpdateEntryLog([FromBody] EntryLogVM model)
     {
@@ -81,7 +81,7 @@ public class EntryController : Controller
         return result;
     }
 
-    [HttpPatch("UpdateExitDate")]
+    [HttpPost("UpdateExitDate")]
     [SwaggerResponse(200, "Exit date updated successfully.", typeof(Result<EntryLogVM>))]
     public async Task<Result<EntryLogVM>> UpdateExitDate([FromBody] EntryLogVM model)
     {
@@ -109,7 +109,7 @@ public class EntryController : Controller
     public ActionResult<List<EntryLog>> EntryLogList([FromQuery] SearchEntryLogVM vm)
     {
         var campusIdClaim = User.FindFirst("CampusId");
-        if (campusIdClaim == null)
+        if (campusIdClaim != null)
         {
             if (int.TryParse(campusIdClaim.Value, out int campusId))
             {
@@ -120,6 +120,7 @@ public class EntryController : Controller
                 throw new Exception("Invalid CampusId format.");
             }
         }
+        //如果是警衛帳號則列出全部
         var entryLogs = _entryLogService.GetEntryLogsList(vm);
         return Ok(entryLogs);
     }

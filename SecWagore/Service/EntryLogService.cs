@@ -111,7 +111,7 @@ namespace SecWagore.Service
         {
             var query = _context.EntryLogs.AsQueryable();
 
-            if (vm.CampusId.HasValue)
+            if (vm.CampusId.HasValue && vm.CampusId!=0)
             {
                 query = query.Where(el => el.CampusId == vm.CampusId.Value);
             }

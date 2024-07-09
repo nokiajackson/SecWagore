@@ -77,8 +77,8 @@ namespace SecWagore.Service
                 try
                 {
                     var entryLog = _context.EntryLogs
-                    .Where(r => r.Id == model.Id)
-                    .FirstOrDefault();
+                        .Where(r => r.Id == model.Id)
+                        .FirstOrDefault();
 
                     if (entryLog != null)
                     {

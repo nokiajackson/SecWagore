@@ -109,7 +109,7 @@
                             <b v-if="log.exitTime">
                                 {{ formatDate(log.exitTime) }}
                             </b>
-                        <button type="bottom" class="btn btn-danger text-white" v-else v-on:click="submitExitForm(log)">
+                        <button type="bottom" class="btn btn-danger text-white" v-else v-on:click="setExitDate(log)">
                                 紀錄離校時間
                             </button>
                         </td>
@@ -117,7 +117,39 @@
                 </tbody>
             </table>
         </div>
-    
+    <div class="modal fade" id="setExitDateDiaglog" tabindex="-1" aria-labelledby="setExitDateDiaglogLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="setExitDateDiaglogLabel">離校時間</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label for="exitTime" class="form-label">離校日期</label>
+                            <input type="text" class="form-control" id="exitTime" v-model="exitTime" v-on:change="combineExitTime">
+                            <button type="button" class="btn btn-sm btn-outline-primary" v-on:click="setCurrentDateTimeToExitTime">帶入現在時間</button>
+                        </div>
+                        <div class="col-4">
+                            <label for="exitTime" class="form-label">離校時間</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control"
+                                       v-model.number="exitHour" v-on:change="combineExitTime">
+                                <input type="number" class="form-control"
+                                       v-model.number="exitMin" v-on:change="combineExitTime">
+                            </div>
+                        </div>
+                    </div>
+                    <pre>{{entryLogsItem}}</pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" v-on:click="submitExitForm">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 
@@ -165,6 +197,9 @@
                 entryTime: null,
                 entryHour: 0,
                 entryMin: 0,
+                exitTime: null,
+                exitHour: 0,
+                exitMin: 0,
                 datas: {
                     id: 0,
                     campusId: 0,
@@ -178,14 +213,10 @@
                     replacementNumber: '',
                     entryTime: null,
                     exitTime: null,
-
-
                },
-                dd: {
-                    id: 0, "campusId": 0, "phoneNumber": "2", "fullName": "a", "numberOfPeople": 3, "interviewee": "2",
-                "purpose": 2, "otherDescription": "", "note": "2", "replacementNumber": "2", 
-                "entryTime": "2024-07-09T07:50:00", "exitTime": null }
-
+                entryLogsItem: {
+                    entryTime: null,
+                },//存檔用
             },
             methods: {
                 toastMsg(msg) {
@@ -199,12 +230,27 @@
                     this.entryMin = now.minute();
                     this.combineEntryTime(); // 合併時間並更新 datas.entryTime
                 },
+                setCurrentDateTimeToExitTime() {
+                    const now = moment();
+                    this.exitTime = now.format('YYYY-MM-DD');
+                    this.exitHour = now.hour();
+                    this.exitMin = now.minute();
+                    this.combineEntryTime(); // 合併時間並更新 datas.exitTime
+                },
                 combineEntryTime() {
                     if (this.entryTime) {
                         const combinedTime = `${this.entryTime} ${String(this.entryHour).padStart(2, '0')}:${String(this.entryMin).padStart(2, '0')}:00`;
                         this.datas.entryTime = moment(combinedTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DDTHH:mm:ss');
                     } else {
                         this.datas.entryTime = null;
+                    }
+                },
+                combineExitTime() {
+                    if (this.exitTime) {
+                        const combinedTime = `${this.exitTime} ${String(this.exitHour).padStart(2, '0')}:${String(this.exitMin).padStart(2, '0')}:00`;
+                        this.datas.exitTime = moment(combinedTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DDTHH:mm:ss');
+                    } else {
+                        this.datas.exitTime = null;
                     }
                 },
                 async submitForm() {
@@ -223,9 +269,9 @@
                         alert('提交失敗');
                     }
                 }, 
-                async submitExitForm(_data) {
+                async submitExitForm() {
                     //this.datas
-                    const tt = JSON.parse(JSON.stringify(_data));
+                    const tt = JSON.parse(JSON.stringify(this.entryLogsItem));
                     //之後再加入驗證
                     console.log(`${window.appRoot.full}Api/Entry/UpdateExitDate`,tt)
                     try {
@@ -286,6 +332,11 @@
                         }
                         return '無';
                     }
+                },
+                setExitDate(item) {
+                    $('#setExitDateDiaglog').modal('show');
+                    //需要洗過資料
+                    this.entryLogsItem = Object.assign({}, item);
                 },
             },
             created() { },

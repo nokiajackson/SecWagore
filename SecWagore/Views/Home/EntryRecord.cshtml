@@ -177,6 +177,20 @@
                     } else if (newVal > 59) {
                         this.entryMin = 59;
                     }
+                },
+                'exitHour': function (newVal) {
+                    if (newVal < 0) {
+                        this.exitHour = 0;
+                    } else if (newVal > 23) {
+                        this.exitHour = 23;
+                    }
+                },
+                'exitMin': function (newVal) {
+                    if (newVal < 0) {
+                        this.exitMin = 0;
+                    } else if (newVal > 59) {
+                        this.exitMin = 59;
+                    }
                 }
             },
             data: {
@@ -235,7 +249,7 @@
                     this.exitTime = now.format('YYYY-MM-DD');
                     this.exitHour = now.hour();
                     this.exitMin = now.minute();
-                    this.combineEntryTime(); // 合併時間並更新 datas.exitTime
+                    this.combineExitTime(); // 合併時間並更新 datas.exitTime
                 },
                 combineEntryTime() {
                     if (this.entryTime) {
@@ -248,9 +262,9 @@
                 combineExitTime() {
                     if (this.exitTime) {
                         const combinedTime = `${this.exitTime} ${String(this.exitHour).padStart(2, '0')}:${String(this.exitMin).padStart(2, '0')}:00`;
-                        this.datas.exitTime = moment(combinedTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DDTHH:mm:ss');
+                        this.entryLogsItem.exitTime = moment(combinedTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DDTHH:mm:ss');
                     } else {
-                        this.datas.exitTime = null;
+                        this.entryLogsItem.exitTime = null;
                     }
                 },
                 async submitForm() {

@@ -32,7 +32,7 @@ namespace SecWagore.Models
         /// <summary>
         /// 事由(ENUM)
         /// </summary>
-        public string Purpose { get; set; } 
+        public int Purpose { get; set; } 
         /// <summary>
         /// 其他說明
         /// </summary>

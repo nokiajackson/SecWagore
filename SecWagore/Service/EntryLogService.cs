@@ -112,8 +112,7 @@ namespace SecWagore.Service
 
             if (vm.Purpose.HasValue && vm.Purpose.Value != 0)
             {
-                string purposeString = vm.Purpose.Value.ToString();
-                query = query.Where(el => el.Purpose == purposeString);
+                query = query.Where(el => el.Purpose == (int)vm.Purpose.Value);
             }
 
             if (vm.EntryTimeStart.HasValue || vm.EntryTimeEnd.HasValue)
@@ -137,12 +136,9 @@ namespace SecWagore.Service
                     (!vm.ExitTimeEnd.HasValue || el.ExitTime <= vm.ExitTimeEnd.Value));
             }
 
-            //var sql = query.ToQueryString();
-
-
             var result = query
-                        .ProjectTo<EntryLogVM>(_mapper.ConfigurationProvider)
-                        .ToList();
+                .ProjectTo<EntryLogVM>(_mapper.ConfigurationProvider)
+                .ToList();
 
             return result;
 

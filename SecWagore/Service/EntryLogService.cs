@@ -9,6 +9,7 @@ using System.Data.Entity.Infrastructure;
 using static SecWagore.Helpers.ResultHelper;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using System.Diagnostics;
 
 
 namespace SecWagore.Service
@@ -63,45 +64,35 @@ namespace SecWagore.Service
             {
                 return await SaveEntryLogAsync(model);
             }
-            else if (model.Id > 0)
-            {
-                var rr = _context.EntryLogs.Any(r => r.Id == model.Id);
-                if (!rr)
-                {
-                    return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
-                }
-            }
-
             using (var trans = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    EntryLog entryLog = _context.EntryLogs.Where(r => r.Id == model.Id && r.CampusId == model.CampusId).FirstOrDefault();
-                    //var entryLog = _context.EntryLogs.Find(model.Id);
-
+                    var entryLog = await _context.EntryLogs.FindAsync(model.Id);
                     if (entryLog == null)
                     {
-                        entryLog = new EntryLog
-                        {
-                            Purpose = (Byte)model.Purpose,
-                        };
+                        return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
                     }
+
                     _mapper.Map(model, entryLog);
                     entryLog.UpdateDate = DateTime.Now;
-                    entryLog.ExitTime = DateTime.Now;
+                    entryLog.ExitTime = model.UpdateDate ?? DateTime.Now;
 
-                    await _context.SaveChangesAsync();
+                    var result = await _context.SaveChangesAsync();
+
                     await trans.CommitAsync();
-                    var updatedModel = _mapper.Map<EntryLogVM>(entryLog);
-                    return ResultHelper.Success<EntryLogVM>(updatedModel, ResultHelper.StatusCode.Get);
 
+                    //var updatedModel = _mapper.Map<EntryLogVM>(entryLog);
+                    return ResultHelper.Success<EntryLogVM>(model, ResultHelper.StatusCode.Save);
                 }
                 catch (Exception ex)
                 {
-                    await trans.RollbackAsync();
-                    return ResultHelper.Failure<EntryLogVM>("異動資料失敗！！" + ex.Message, ResultHelper.StatusCode.Get);
+                    // 日誌或調試輸出異常信息
+                    Debug.WriteLine(ex.Message);
+                    return ResultHelper.Failure<EntryLogVM>("查找資料時發生錯誤: " + ex.Message, ResultHelper.StatusCode.Save);
                 }
             }
+
         }
 
 
@@ -109,7 +100,7 @@ namespace SecWagore.Service
         {
             var query = _context.EntryLogs.AsQueryable();
 
-            if (vm.CampusId.HasValue)
+            if (vm.CampusId.HasValue && vm.CampusId!=0)
             {
                 query = query.Where(el => el.CampusId == vm.CampusId.Value);
             }
@@ -121,8 +112,7 @@ namespace SecWagore.Service
 
             if (vm.Purpose.HasValue && vm.Purpose.Value != 0)
             {
-                query = query.Where(el => el.Purpose == (byte)vm.Purpose.Value);
-
+                query = query.Where(el => el.Purpose == (int)vm.Purpose.Value);
             }
 
             if (vm.EntryTimeStart.HasValue || vm.EntryTimeEnd.HasValue)
@@ -146,12 +136,9 @@ namespace SecWagore.Service
                     (!vm.ExitTimeEnd.HasValue || el.ExitTime <= vm.ExitTimeEnd.Value));
             }
 
-            var sql = query.ToQueryString();
-
-
             var result = query
-                        .ProjectTo<EntryLogVM>(_mapper.ConfigurationProvider)
-                        .ToList();
+                .ProjectTo<EntryLogVM>(_mapper.ConfigurationProvider)
+                .ToList();
 
             return result;
 

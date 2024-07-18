@@ -30,8 +30,7 @@ public class EntryController : Controller
 
     
     [HttpPost("Save")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    [HttpPost]
+    [SwaggerResponse(200, "Entry log saved successfully.", typeof(Result<EntryLogVM>))]
     public async Task<Result<EntryLogVM>> SaveEntryLog([FromBody] EntryLogVM model)
     {
 
@@ -55,8 +54,7 @@ public class EntryController : Controller
     }
 
     [HttpPost("Update")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    [HttpPost]
+    [SwaggerResponse(200, "Entry log updated successfully.", typeof(Result<EntryLogVM>))]
     public async Task<Result<EntryLogVM>> UpdateEntryLog([FromBody] EntryLogVM model)
     {
         if (model == null)
@@ -84,11 +82,10 @@ public class EntryController : Controller
     }
 
     [HttpPost("UpdateExitDate")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
-    [HttpPost]
+    [SwaggerResponse(200, "Exit date updated successfully.", typeof(Result<EntryLogVM>))]
     public async Task<Result<EntryLogVM>> UpdateExitDate([FromBody] EntryLogVM model)
     {
-        if (model == null || model.Id==0)
+        if ( model == null || model.Id == 0 )
             return ResultHelper.Failure<EntryLogVM>("找不到指定的資料!", ResultHelper.StatusCode.Save);
 
         return await _entryLogService.UpateEntryLogAsync(model);
@@ -108,7 +105,7 @@ public class EntryController : Controller
     //}
 
     [HttpGet("EntryLogList")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    [SwaggerResponse(200, "Entry logs retrieved successfully.", typeof(List<EntryLog>))]
     public ActionResult<List<EntryLog>> EntryLogList([FromQuery] SearchEntryLogVM vm)
     {
         var campusIdClaim = User.FindFirst("CampusId");
@@ -123,12 +120,13 @@ public class EntryController : Controller
                 throw new Exception("Invalid CampusId format.");
             }
         }
+        //如果是警衛帳號則列出全部
         var entryLogs = _entryLogService.GetEntryLogsList(vm);
         return Ok(entryLogs);
     }
 
     [HttpPost("CreateUser")]
-    [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
+    [SwaggerResponse(200, "Account created successfully.")]
     public Task<IActionResult> CreateUser(Account account)
     {
         _accountService.CreateUser(account);

@@ -7,6 +7,9 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 try {
+    // °t¸m¤é»x
+    builder.Logging.AddConsole();
+    builder.Logging.AddDebug();
 
     // °t¸m AutoMapper
     builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -112,17 +115,18 @@ try {
 }
 catch (Exception ex)
 {
+    WriteLog(ex.ToString());
     throw ex;
 }
 
 void WriteLog(string message)
 {
-    var path = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-    if (!Directory.Exists(path + "\\Logs\\"))
+    var path = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath), "Logs");
+    if (!Directory.Exists(path))
     {
-        Directory.CreateDirectory(path + "\\Logs\\");
+        Directory.CreateDirectory(path);
     }
-    var logFile = path + "\\Logs\\" + string.Format("FiscPms_{0:D3}{1:D2}{2:D2}.log", DateTime.Now.Year - 1911, DateTime.Now.Month, DateTime.Now.Day);
+    var logFile = Path.Combine(path, string.Format("FiscPms_{0:D3}{1:D2}{2:D2}.log", DateTime.Now.Year - 1911, DateTime.Now.Month, DateTime.Now.Day));
     using (StreamWriter sw = System.IO.File.AppendText(logFile))
     {
         sw.WriteLine(string.Format("{0:T}:{1} ", DateTime.Now, message));

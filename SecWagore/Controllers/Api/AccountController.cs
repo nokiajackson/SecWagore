@@ -40,7 +40,6 @@ public class AccountController : Controller
         return Ok(campuses);
     }
 
-
     [HttpPost("CreateUser")]
     [SwaggerResponse(200, type: typeof(Result<IActionResult>))]
     public Task<IActionResult> CreateUser(Account account)
@@ -48,7 +47,6 @@ public class AccountController : Controller
         _accountService.CreateUser(account);
         return Task.FromResult<IActionResult>(Ok("Account created successfully."));
     }
-
 
     private bool ValidateImageCaptcha(string captcha)
     {
@@ -119,6 +117,7 @@ public class AccountController : Controller
             return Unauthorized("Invalid credentials.");
         }
     }
+    
     /// <summary>
     /// 登出
     /// </summary>

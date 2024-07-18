@@ -4,3 +4,6 @@ dotnet ef dbcontext scaffold "server=192.168.0.8\\MSSQLLocalDB;database=SecDb;Us
 dotnet ef migrations add InitialMigration
 dotnet ef migrations Update-Database
 https://ithelp.ithome.com.tw/articles/10235501?sc=iThelpR
+
+
+Scaffold-DbContext "Server=伺服器位置;Database=資料庫;User ID=帳號;Password=密碼;TrustServerCertificate=true" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force

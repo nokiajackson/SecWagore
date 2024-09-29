@@ -90,12 +90,12 @@ try {
     app.UseStaticFiles();
 
     // Serve files from the "node_modules" directory
-    app.UseStaticFiles(new StaticFileOptions
-    {
-        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
-            Path.Combine(builder.Environment.ContentRootPath, "node_modules")),
-        RequestPath = "/node_modules"
-    });
+    //app.UseStaticFiles(new StaticFileOptions
+    //{
+    //    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+    //        Path.Combine(builder.Environment.ContentRootPath, "node_modules")),
+    //    RequestPath = "/node_modules"
+    //});
     app.UseRouting();
 
     app.UseAuthentication(); //∏ÍÆ∆≈Á√“
